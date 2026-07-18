@@ -22,7 +22,14 @@
 			<FieldGroup>
 				<Field>
 					<FieldLabel for="email-{id}">E-Mail</FieldLabel>
-					<Input id="email-{id}" name="email" type="email" placeholder="m@example.com" required />
+					<Input
+						id="email-{id}"
+						name="email"
+						type="email"
+						placeholder="v.nachname@hammer.partners"
+						value={form?.user?.email ?? ''}
+						required
+					/>
 				</Field>
 				<Field>
 					<div class="flex items-center">
