@@ -1,4 +1,6 @@
+import { SECRET_JWT_KEY } from '$env/static/private';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { user_model } from './models';
 import { email_regex } from './utils';
 
@@ -9,7 +11,9 @@ export async function login_user(email: string, password: string) {
 		return { error: user.error };
 	}
 
-	return { user };
+	const token = jwt.sign({ id: user.id, email: user.email }, SECRET_JWT_KEY);
+
+	return { token, user };
 }
 
 async function get_user(email: string, password: string): Promise<{ error: string } | App.User> {

@@ -1,8 +1,9 @@
 import { login_user } from '$lib/server/login';
+import { cookie_options } from '$lib/server/utils';
 import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions: Actions = {
-	login: async ({ request }) => {
+	login: async ({ request, cookies }) => {
 		const data = await request.formData();
 		const email = (data.get('email') as string)?.toLowerCase()?.trim();
 		const password = data.get('password') as string;
@@ -13,6 +14,11 @@ export const actions: Actions = {
 			return fail(400, { email, error: user_data.error });
 		}
 
-		return { email, user: user_data.user };
+		const { token, user } = user_data;
+
+		cookies.set('auth-token', token, cookie_options);
+		cookies.set('email', email, cookie_options);
+
+		return { email, user };
 	}
 };
