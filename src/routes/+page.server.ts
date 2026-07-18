@@ -1,6 +1,6 @@
 import { login_user } from '$lib/server/login';
 import { cookie_options } from '$lib/server/utils';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
 
 export const actions: Actions = {
 	login: async ({ request, cookies }) => {
@@ -19,6 +19,6 @@ export const actions: Actions = {
 		cookies.set('auth-token', token, cookie_options);
 		cookies.set('email', email, cookie_options);
 
-		return { email, user };
+		throw redirect(303, '/app');
 	}
 };
