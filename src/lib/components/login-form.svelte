@@ -3,6 +3,9 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Field, FieldGroup, FieldLabel } from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import type { ActionData } from '../../routes/register/$types';
+
+	const { form }: { form: ActionData } = $props();
 
 	const id = $props.id();
 </script>
@@ -29,6 +32,13 @@
 				</Field>
 				<Field>
 					<Button type="submit" class="w-full">Login</Button>
+				</Field>
+				<Field>
+					{#if form?.error}
+						<p class="text-sm text-destructive">{form.error}</p>
+					{:else if form?.success_message}
+						<p class="text-success text-sm">{form.success_message}</p>
+					{/if}
 				</Field>
 			</FieldGroup>
 		</form>
