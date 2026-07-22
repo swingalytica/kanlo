@@ -1,7 +1,6 @@
 import { authenticate } from '$lib/server/authenticate';
 import { membership_model, OrganizationRole } from '$lib/server/mongodb/models/membership';
 import { organization_model } from '$lib/server/mongodb/models/organization';
-import { serializeNonPOJOs } from '$lib/server/utils/serializeNonPOJOs';
 import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -13,14 +12,16 @@ export const load: PageServerLoad = async (event) => {
 			throw new Error('User not authenticated');
 		}
 
-		const organisations = await membership_model.find({ user: authenticated.id });
+		const memberships = await membership_model
+			.find({ user: authenticated.id })
+			.populate('organization');
 
-		console.log('organisations', organisations);
+		console.log('memberships', memberships);
 
-		return { organisations: serializeNonPOJOs(organisations) };
+		return { memberships: JSON.parse(JSON.stringify(memberships)) };
 	} catch (error) {
 		console.error(error);
-		return { organisations: [] };
+		return { memberships: [] };
 	}
 };
 

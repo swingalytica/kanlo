@@ -24,13 +24,8 @@
 	}
 </script>
 
-{#if data.organisations && data.organisations.length == 0}
+{#if data.memberships && data.memberships.length == 0}
 	<div class="flex h-full flex-col items-center justify-center gap-6">
-		<div class="text-center">
-			<h1 class="mb-2 text-2xl font-bold text-foreground">No organisations found</h1>
-			<p class="text-muted-foreground">You are not a member of any organisations yet.</p>
-		</div>
-
 		<form
 			method="POST"
 			action="?/create_organisation"
@@ -75,5 +70,33 @@
 				Create organisation
 			</Button>
 		</form>
+	</div>
+{:else}
+	<div class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3">
+		{#each data.memberships as membership (membership._id)}
+			<a
+				href="/app/{membership.organization._id}"
+				class="flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent"
+			>
+				{#if membership.organization.icon}
+					<img
+						src={membership.organization.icon}
+						alt={membership.organization.name}
+						class="h-12 w-12 rounded-md object-cover"
+					/>
+				{:else}
+					<div
+						class="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground"
+					>
+						{generateLogoFallback(membership.organization.name)}
+					</div>
+				{/if}
+
+				<div class="flex flex-col">
+					<span class="font-medium text-foreground">{membership.organization.name}</span>
+					<span class="text-xs text-muted-foreground">{membership.role}</span>
+				</div>
+			</a>
+		{/each}
 	</div>
 {/if}
