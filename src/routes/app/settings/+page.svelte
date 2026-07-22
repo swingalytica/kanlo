@@ -98,23 +98,28 @@
 			<Dialog.Title>Labels</Dialog.Title>
 		</Dialog.Header>
 
-		<div class="flex flex-col gap-3">
-			{#each data.labels as label}
-				<button
-					type="button"
-					class="flex items-center justify-between rounded-md border p-3"
-					onclick={() => open_edit_label(label)}
-				>
-					<div class="flex items-center gap-2">
-						<div class="h-4 w-4 rounded-full" style="background-color: {label.color}"></div>
+		<form action="?/delete_label" method="POST">
+			<div class="flex flex-col gap-3">
+				{#each data.labels as label}
+					<button
+						type="button"
+						class="flex items-center justify-between rounded-md border p-3"
+						onclick={() => open_edit_label(label)}
+					>
+						<div class="flex items-center gap-2">
+							<div class="h-4 w-4 rounded-full" style="background-color: {label.color}"></div>
 
-						<span>{label.name}</span>
-					</div>
-				</button>
-			{/each}
+							<span>{label.name}</span>
+						</div>
+						<Button type="submit" name="id" value={label._id} variant="destructive" size="sm">
+							Delete
+						</Button>
+					</button>
+				{/each}
 
-			<Button onclick={() => (create_dialog_open = true)}>Create label</Button>
-		</div>
+				<Button onclick={() => (create_dialog_open = true)}>Create label</Button>
+			</div>
+		</form>
 	</Dialog.Content>
 </Dialog.Root>
 
@@ -169,7 +174,7 @@
 				{/if}
 			</div>
 
-			<Button type="submit">Create</Button>
+			<Button type="submit" name="organization_id" value={organization}>Create</Button>
 		</form>
 	</Dialog.Content>
 </Dialog.Root>
