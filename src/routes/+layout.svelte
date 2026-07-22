@@ -5,11 +5,11 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import './layout.css';
 
-	let { children } = $props();
+	let { children, data } = $props();
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <ModeWatcher />
-<Header />
+<Header authenticated={data.authenticated} />
 {@render children()}
 <Footer />
