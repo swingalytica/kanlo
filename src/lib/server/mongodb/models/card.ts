@@ -6,37 +6,35 @@ const card_schema = new mongoose.Schema(
 			type: String,
 			required: true
 		},
-
 		description: {
 			type: String,
 			default: ''
 		},
-
 		board: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Board',
 			required: true
 		},
-
 		column: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true
 		},
-
 		order: {
 			type: Number,
 			required: true
 		},
-
 		labels: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'Label'
 			}
 		],
-
 		due_date: {
 			type: Date
+		},
+		completed: {
+			type: Boolean,
+			default: false
 		}
 	},
 	{

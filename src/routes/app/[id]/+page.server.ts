@@ -436,5 +436,50 @@ export const actions: Actions = {
 				error: 'Internal Server Error'
 			});
 		}
+	},
+	mark_card_completed: async ({ request }) => {
+		try {
+			const data = await request.formData();
+
+			const card_id = data.get('card_id') as string;
+			const completed = data.get('completed') === 'true';
+			const board_id = data.get('board_id') as string;
+
+			console.log({ card_id, completed, board_id });
+
+			if (!card_id) {
+				return fail(400, {
+					error: 'Card ID is required'
+				});
+			}
+
+			const card = await card_model.findByIdAndUpdate(
+				card_id,
+				{
+					completed
+				},
+				{ returnDocument: 'after' }
+			);
+
+			if (!card) {
+				return fail(404, {
+					error: 'Card not found'
+				});
+			}
+
+			const board = await board_model.findById({ _id: board_id }).lean();
+			const cards = await card_model.find({ board: board_id }).lean();
+
+			return {
+				success: true,
+				board: JSON.parse(JSON.stringify(board)),
+				cards: JSON.parse(JSON.stringify(cards))
+			};
+		} catch (error) {
+			console.error(error);
+			return fail(500, {
+				error: 'Internal Server Error'
+			});
+		}
 	}
 };

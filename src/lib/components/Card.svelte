@@ -5,6 +5,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Select from '$lib/components/ui/select';
+	import { Check } from '@lucide/svelte';
 
 	type CardType = {
 		_id: string;
@@ -14,6 +15,7 @@
 		order: number;
 		labels: [string];
 		due_date?: string;
+		completed: boolean;
 	};
 
 	let {
@@ -72,16 +74,35 @@
 	}}
 	class="w-full cursor-grab rounded-md border border-border bg-background p-3 text-left text-sm text-foreground shadow-sm active:cursor-grabbing"
 >
-	{card.title}
+	{#if card.completed}
+		<div
+			class="mb-1 flex flex-row items-center justify-center text-xs font-semibold text-green-600"
+		>
+			<Check class="h-4 w-4" /> Completed
+		</div>
+	{/if}
+	<span class={card.completed ? 'line-through opacity-50' : ''}>{card.title}</span>
 </button>
 
 <Dialog.Root bind:open={dialog_open}>
 	<Dialog.Content class="sm:max-w-xl">
-		<form action="?/save_card" method="POST" use:enhance>
-			<Dialog.Header>
-				<Dialog.Title>Edit card</Dialog.Title>
-			</Dialog.Header>
+		<Dialog.Header class="mb-4 flex gap-4">
+			{#if !card.completed}
+				<form action="?/mark_card_completed" method="POST" use:enhance>
+					<div class="flex w-max flex-row items-center justify-start gap-1">
+						<Button type="submit" variant="outline">
+							<Check class="h-4 w-4" />
+							Complete Task
+						</Button>
+					</div>
+					<input type="hidden" name="card_id" value={card._id} hidden />
+					<input type="hidden" name="completed" value="true" hidden />
+					<input type="hidden" name="board_id" value={board_id} hidden />
+				</form>
+			{/if}
+		</Dialog.Header>
 
+		<form action="?/save_card" method="POST" use:enhance>
 			<div class="flex flex-col gap-6">
 				<!-- Titel -->
 				<div class="flex flex-col gap-1.5">
