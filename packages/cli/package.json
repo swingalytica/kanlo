@@ -1,5 +1,5 @@
 {
-	"name": "kanlo",
+	"name": "@kanlo/cli",
 	"version": "0.0.1",
 	"description": "Self-hosted project management platform",
 	"bin": {
