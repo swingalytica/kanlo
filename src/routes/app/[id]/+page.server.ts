@@ -82,11 +82,18 @@ export const actions: Actions = {
 
 			const board = await board_model.findOne({ project: project_id }).lean();
 			const cards = await card_model.find({ board: board?._id }).lean();
+			const activities = await activity_model
+				.find({ card: { $in: cards.map((c) => c._id) } })
+				.populate('user')
+				.lean();
+
+			console.log(activities);
 
 			return {
 				success: true,
 				board: JSON.parse(JSON.stringify(board)),
-				cards: JSON.parse(JSON.stringify(cards))
+				cards: JSON.parse(JSON.stringify(cards)),
+				activities: JSON.parse(JSON.stringify(activities))
 			};
 		} catch (error) {
 			console.log(error);

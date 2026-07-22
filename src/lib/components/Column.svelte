@@ -8,7 +8,7 @@
 	import { MoreVertical, Plus } from '@lucide/svelte';
 	import type { ActionData } from '../../routes/app/[id]/$types';
 	import type { ColumnType } from './Board.svelte';
-	import Card from './Card.svelte';
+	import Card, { type CardType } from './Card.svelte';
 
 	let {
 		column,
@@ -121,6 +121,9 @@
 				{cardDragStart}
 				{cardDragEnd}
 				board_id={form?.board?._id}
+				activities={form?.activities?.filter(
+					(activity: { card: CardType }) => activity.card === card._id
+				)}
 			/>
 		{/each}
 

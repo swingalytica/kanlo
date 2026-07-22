@@ -1,13 +1,5 @@
-<script lang="ts">
-	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Select from '$lib/components/ui/select';
-	import { Check } from '@lucide/svelte';
-
-	type CardType = {
+<script lang="ts" module>
+	export type CardType = {
 		_id: string;
 		title: string;
 		description: string;
@@ -17,6 +9,16 @@
 		due_date?: string;
 		completed: boolean;
 	};
+</script>
+
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	import { Button } from '$lib/components/ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import * as Select from '$lib/components/ui/select';
+	import { Check } from '@lucide/svelte';
 
 	let {
 		card,
@@ -24,6 +26,7 @@
 		index,
 		available_labels,
 		board_id,
+		activities,
 		cardDragStart,
 		cardDragEnd
 	}: {
@@ -36,9 +39,19 @@
 			color: string;
 		}[];
 		board_id: string;
+		activities: {
+			_id: string;
+			card: string;
+			user: string;
+			type: string;
+			data: any;
+			createdAt: string;
+		}[];
 		cardDragStart: (card_id: string, column_id: string, index: number) => void;
 		cardDragEnd: (card_id: string, column_id: string, order: number) => void;
 	} = $props();
+
+	console.log(activities);
 
 	let dialog_open = $state(false);
 	let title = $derived(card.title);
@@ -175,9 +188,25 @@
 				<div class="flex flex-col gap-2">
 					<Label>Activity</Label>
 
-					<div class="rounded-md border border-border p-3 text-sm text-muted-foreground">
-						No activity yet.
-					</div>
+					{#if activities.length > 0}
+						<div class="flex flex-col gap-2">
+							{#each activities as activity (activity._id)}
+								<div class="rounded-md border border-border p-3 text-sm">
+									<p>
+										<strong>{activity.user}</strong>
+										{activity.type}
+									</p>
+									<p class="text-xs text-muted-foreground">
+										{new Date(activity.createdAt).toLocaleString()}
+									</p>
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<div class="rounded-md border border-border p-3 text-sm text-muted-foreground">
+							No activity yet.
+						</div>
+					{/if}
 				</div>
 			</div>
 
