@@ -1,9 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/state';
-
 	let { authenticated } = $props();
-
-	const organization = page.params.id;
 </script>
 
 <header class="flex items-center justify-between border-b border-border bg-card px-6 py-4">
@@ -28,7 +24,7 @@
 	{:else}
 		<nav class="flex items-center gap-2">
 			<a
-				href="/app/{organization}/settings"
+				href="/app/settings"
 				class="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
 			>
 				Settings

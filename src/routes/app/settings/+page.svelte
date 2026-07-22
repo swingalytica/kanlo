@@ -3,8 +3,22 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Input } from '$lib/components/ui/input';
+	import * as Select from '$lib/components/ui/select';
 
 	let { data } = $props();
+
+	let organization = $state('');
+
+	$effect(() => {
+		if (!organization && data.organizations.length > 0) {
+			organization = data.organizations[0]._id;
+		}
+	});
+
+	const trigger_content = $derived(
+		data.organizations.find((org: { _id: string }) => org._id === organization)?.name ??
+			'Select organization'
+	);
 
 	let labels_dialog_open = $state(false);
 	let create_dialog_open = $state(false);
@@ -47,6 +61,20 @@
 		<h1 class="text-2xl font-semibold">Organization Settings</h1>
 
 		<p class="text-sm text-muted-foreground">Manage your organization settings.</p>
+
+		<Select.Root type="single" bind:value={organization}>
+			<Select.Trigger class="w-64">
+				{trigger_content}
+			</Select.Trigger>
+
+			<Select.Content>
+				{#each data.organizations as org}
+					<Select.Item value={org._id}>
+						{org.name}
+					</Select.Item>
+				{/each}
+			</Select.Content>
+		</Select.Root>
 	</div>
 
 	<section class="rounded-lg border border-border p-4">
