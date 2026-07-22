@@ -54,21 +54,29 @@
 
 	<nav class="flex flex-col gap-1">
 		{#each data.projects as project (project._id)}
-			<div class="border-b-2 border-border py-2">
-				<ContextMenu.Root>
-					<ContextMenu.Trigger class="flex flex-row items-center justify-between">
-						<Button variant="outline" size="sm">
-							{project.name}
-						</Button>
-						<Button variant="secondary" size="sm" disabled>
-							<MoreVertical />
-						</Button>
-					</ContextMenu.Trigger>
-					<ContextMenu.Content>
-						<ContextMenu.Item class="text-destructive">Delete</ContextMenu.Item>
-					</ContextMenu.Content>
-				</ContextMenu.Root>
-			</div>
+			<form action="?/get_project" method="POST" use:enhance>
+				<div class="border-b-2 border-border py-2">
+					<ContextMenu.Root>
+						<ContextMenu.Trigger class="flex flex-row items-center justify-between">
+							<Button variant="outline" size="sm" type="submit" name="id" value={project._id}>
+								{project.name}
+							</Button>
+							<Button variant="secondary" size="sm" disabled>
+								<MoreVertical />
+							</Button>
+						</ContextMenu.Trigger>
+						<ContextMenu.Content>
+							<form action="?/delete_project" method="POST" use:enhance>
+								<ContextMenu.Item class="text-destructive">
+									<Button variant="ghost" size="sm" type="submit" name="id" value={project._id}>
+										Delete project
+									</Button>
+								</ContextMenu.Item>
+							</form>
+						</ContextMenu.Content>
+					</ContextMenu.Root>
+				</div>
+			</form>
 		{/each}
 	</nav>
 </aside>
