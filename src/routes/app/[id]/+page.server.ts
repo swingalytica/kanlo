@@ -1,7 +1,7 @@
 import { authenticate } from '$lib/server/authenticate';
 import { membership_model } from '$lib/server/mongodb/models/membership';
 import { organization_model } from '$lib/server/mongodb/models/organization';
-import { project_model } from '$lib/server/mongodb/models/projects';
+import { project_model } from '$lib/server/mongodb/models/project';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
