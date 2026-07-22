@@ -151,12 +151,12 @@
 			})}
 		>
 			<Plus class="h-4 w-4" />
-			Add column
+			Add Section
 		</Dialog.Trigger>
 
 		<Dialog.Content class="sm:max-w-106.25">
 			<Dialog.Header>
-				<Dialog.Title>New column</Dialog.Title>
+				<Dialog.Title>New Section</Dialog.Title>
 			</Dialog.Header>
 
 			<form
@@ -186,7 +186,7 @@
 				</div>
 
 				<Dialog.Footer>
-					<Button type="submit">Create column</Button>
+					<Button type="submit">Create Section</Button>
 				</Dialog.Footer>
 			</form>
 		</Dialog.Content>
