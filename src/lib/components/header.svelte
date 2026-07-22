@@ -4,7 +4,7 @@
 
 <header class="flex items-center justify-between border-b border-border bg-card px-6 py-4">
 	<a href={authenticated ? '/app' : '/'}
-		><span class="text-lg font-semibold tracking-tight text-foreground">TaskFlow</span></a
+		><span class="text-lg font-semibold tracking-tight text-foreground">Kanlo</span></a
 	>
 	{#if !authenticated}
 		<nav class="flex items-center gap-2">

@@ -51,7 +51,7 @@ export const actions: Actions = {
 				role: OrganizationRole.OWNER
 			});
 
-			return { success: true, organisation: new_organisation };
+			return { success: true, organisation: JSON.parse(JSON.stringify(new_organisation)) };
 		} catch (error) {
 			console.error(error);
 			return { error: 'Failed to create organization' };
