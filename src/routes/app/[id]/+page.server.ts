@@ -341,9 +341,7 @@ export const actions: Actions = {
 			const board_id = data.get('board_id');
 			const card = JSON.parse(data.get('card') as string);
 
-			const card_id = card.card_id;
-			const column_id = card.column_id;
-			const order = card.order;
+			const { card_id, column_id, order } = card;
 
 			if (
 				typeof card_id !== 'string' ||
