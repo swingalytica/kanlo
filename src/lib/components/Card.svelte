@@ -12,11 +12,7 @@
 		description: string;
 		column: string;
 		order: number;
-		labels: {
-			_id: string;
-			name: string;
-			color: string;
-		}[];
+		labels: [string];
 		due_date?: string;
 	};
 
@@ -25,6 +21,7 @@
 		column,
 		index,
 		available_labels,
+		board_id,
 		cardDragStart,
 		cardDragEnd
 	}: {
@@ -36,6 +33,7 @@
 			name: string;
 			color: string;
 		}[];
+		board_id: string;
 		cardDragStart: (card_id: string, column_id: string, index: number) => void;
 		cardDragEnd: (card_id: string, column_id: string, order: number) => void;
 	} = $props();
@@ -43,16 +41,17 @@
 	let dialog_open = $state(false);
 	let title = $derived(card.title);
 	let description = $derived(card.description);
-	let due_date = $derived(card.due_date ?? '');
-	let labels = $derived([...card.labels]);
-	let selected_labels = $derived<string[]>(card.labels.map((label) => label._id));
+	let due_date = $derived(card.due_date ? new Date(card.due_date).toISOString().split('T')[0] : '');
+	let selected_labels = $derived<string[]>(card.labels);
+	const available_labels_map = $derived(
+		new Map(available_labels.map((label) => [label._id, label]))
+	);
 
 	function open_dialog() {
 		title = card.title;
 		description = card.description;
-		due_date = card.due_date ?? '';
-		labels = [...card.labels];
-
+		due_date = card.due_date ? new Date(card.due_date).toISOString().split('T')[0] : '';
+		selected_labels = [...card.labels];
 		dialog_open = true;
 	}
 </script>
@@ -109,14 +108,16 @@
 
 					<div class="flex flex-wrap gap-2">
 						{#each selected_labels as label_id}
-							{#each available_labels.filter((label) => label._id === label_id) as label}
+							{@const label = available_labels_map.get(label_id)}
+
+							{#if label}
 								<span
 									class="rounded px-2 py-1 text-xs text-white"
 									style="background-color: {label.color}"
 								>
 									{label.name}
 								</span>
-							{/each}
+							{/if}
 						{/each}
 					</div>
 
@@ -127,7 +128,7 @@
 							<Select.Group>
 								<Select.Label>Available Labels</Select.Label>
 
-								{#each available_labels as label}
+								{#each available_labels as label (label._id)}
 									<Select.Item value={label._id}>
 										<span
 											class="rounded px-2 py-1 text-xs text-white"
@@ -164,6 +165,7 @@
 			</Dialog.Footer>
 			<input type="hidden" name="card_id" value={card._id} hidden />
 			<input type="hidden" name="labels" value={selected_labels.join(',')} hidden />
+			<input type="hidden" name="board_id" value={board_id} hidden />
 		</form>
 	</Dialog.Content>
 </Dialog.Root>

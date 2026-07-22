@@ -113,7 +113,15 @@
 		}}
 	>
 		{#each cards_for_column(column._id) as card, index (card._id)}
-			<Card {card} column={column._id} {index} {available_labels} {cardDragStart} {cardDragEnd} />
+			<Card
+				{card}
+				column={column._id}
+				{index}
+				{available_labels}
+				{cardDragStart}
+				{cardDragEnd}
+				board_id={form?.board?._id}
+			/>
 		{/each}
 
 		<Button

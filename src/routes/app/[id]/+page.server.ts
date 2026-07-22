@@ -395,6 +395,7 @@ export const actions: Actions = {
 			const description = data.get('description') as string;
 			const due_date = data.get('due_date') as string;
 			const labels = (data.get('labels') as string)?.split(',').filter(Boolean) || [];
+			const board_id = data.get('board_id') as string;
 
 			if (!card_id || !title) {
 				return fail(400, {
@@ -403,6 +404,32 @@ export const actions: Actions = {
 			}
 
 			console.log({ card_id, title, description, due_date, labels });
+
+			const card = await card_model.findByIdAndUpdate(
+				card_id,
+				{
+					title,
+					description,
+					due_date: due_date ? new Date(due_date) : null,
+					labels
+				},
+				{ returnDocument: 'after' }
+			);
+
+			if (!card) {
+				return fail(404, {
+					error: 'Card not found'
+				});
+			}
+
+			const board = await board_model.findById({ _id: board_id }).lean();
+			const cards = await card_model.find({ board: board_id }).lean();
+
+			return {
+				success: true,
+				board: JSON.parse(JSON.stringify(board)),
+				cards: JSON.parse(JSON.stringify(cards))
+			};
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
