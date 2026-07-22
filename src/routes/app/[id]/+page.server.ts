@@ -295,5 +295,43 @@ export const actions: Actions = {
 			board: JSON.parse(JSON.stringify(board)),
 			cards: JSON.parse(JSON.stringify(await card_model.find({ board: board_id }).lean()))
 		};
+	},
+	add_card: async ({ request }) => {
+		const data = await request.formData();
+
+		const board_id = data.get('board_id');
+		const column_id = data.get('column_id');
+		const title = data.get('title');
+
+		if (
+			typeof board_id !== 'string' ||
+			typeof column_id !== 'string' ||
+			typeof title !== 'string'
+		) {
+			return fail(400, {
+				error: 'Invalid data'
+			});
+		}
+
+		const last_card = await card_model
+			.findOne({
+				column: column_id
+			})
+			.sort({
+				order: -1
+			});
+
+		await card_model.create({
+			title,
+			board: board_id,
+			column: column_id,
+			order: last_card ? last_card.order + 1 : 0
+		});
+
+		return {
+			success: true,
+			board: JSON.parse(JSON.stringify(await board_model.findById(board_id).lean())),
+			cards: JSON.parse(JSON.stringify(await card_model.find({ board: board_id }).lean()))
+		};
 	}
 };

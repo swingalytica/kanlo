@@ -36,6 +36,9 @@
 	let rename_value = $derived(column.name);
 
 	let delete_form_element: HTMLFormElement;
+
+	let add_card_dialog_open = $state(false);
+	let new_card_title = $state('');
 </script>
 
 <div class="flex w-72 shrink-0 flex-col rounded-lg bg-card">
@@ -94,12 +97,16 @@
 			<Card {card} />
 		{/each}
 
-		<button
-			class="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+		<Button
+			onclick={() => {
+				new_card_title = '';
+				add_card_dialog_open = true;
+			}}
+			variant="outline"
 		>
 			<Plus class="h-4 w-4" />
 			Add card
-		</button>
+		</Button>
 	</div>
 </div>
 
@@ -142,6 +149,46 @@
 
 			<Dialog.Footer>
 				<Button type="submit">Save</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root bind:open={add_card_dialog_open}>
+	<Dialog.Content class="sm:max-w-106.25">
+		<Dialog.Header>
+			<Dialog.Title>New card</Dialog.Title>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action="?/add_card"
+			class="flex flex-col gap-4"
+			use:enhance={() => {
+				return async ({ update }) => {
+					await update();
+					add_card_dialog_open = false;
+					new_card_title = '';
+				};
+			}}
+		>
+			<input type="hidden" name="board_id" value={form?.board?._id} />
+			<input type="hidden" name="column_id" value={column._id} />
+
+			<div class="flex flex-col gap-1.5">
+				<Label for="card-title">Title</Label>
+
+				<Input
+					id="card-title"
+					name="title"
+					bind:value={new_card_title}
+					required
+					placeholder="New task"
+				/>
+			</div>
+
+			<Dialog.Footer>
+				<Button type="submit">Create card</Button>
 			</Dialog.Footer>
 		</form>
 	</Dialog.Content>
