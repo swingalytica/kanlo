@@ -66,7 +66,7 @@
 					<form method="POST" action="?/delete_label" use:enhance>
 						<input type="hidden" name="id" value={label._id} />
 
-						<Button variant="destructive" size="sm">Delete</Button>
+						<Button variant="destructive" size="sm" type="submit">Delete</Button>
 					</form>
 				</div>
 			{/each}
@@ -116,13 +116,7 @@
 					{/each}
 				</div>
 
-				<Input
-					name="color"
-					bind:value={color}
-					placeholder="#ef4444"
-					pattern="^#[0-9a-fA-F]{6}$"
-					required
-				/>
+				<Input name="color" bind:value={color} placeholder="#ef4444" required />
 			</div>
 
 			<div class="rounded px-2 py-1 text-xs text-white" style="background-color: {color}">

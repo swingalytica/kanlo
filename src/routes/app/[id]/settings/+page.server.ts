@@ -40,7 +40,6 @@ export const actions: Actions = {
 			success: true
 		};
 	},
-
 	update_label: async ({ request }) => {
 		const data = await request.formData();
 
@@ -68,7 +67,6 @@ export const actions: Actions = {
 			success: true
 		};
 	},
-
 	delete_label: async ({ request }) => {
 		const data = await request.formData();
 
