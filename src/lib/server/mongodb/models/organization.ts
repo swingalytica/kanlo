@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 
 const organization_schema = new mongoose.Schema(
 	{
-		name: { type: String, required: true }
+		name: { type: String, required: true },
+		icon: { type: String, required: false }
 	},
 	{ timestamps: true }
 );

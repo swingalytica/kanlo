@@ -14,7 +14,7 @@ export const actions: Actions = {
 			return fail(400, { email, error: user_data.error });
 		}
 
-		const { token, user } = user_data;
+		const { token } = user_data;
 
 		cookies.set('auth-token', token, cookie_options);
 		cookies.set('email', email, cookie_options);
