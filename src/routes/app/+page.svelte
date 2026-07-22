@@ -24,7 +24,7 @@
 	}
 </script>
 
-{#if data.organisations.length == 0}
+{#if data.organisations && data.organisations.length == 0}
 	<div class="flex h-full flex-col items-center justify-center gap-6">
 		<div class="text-center">
 			<h1 class="mb-2 text-2xl font-bold text-foreground">No organisations found</h1>

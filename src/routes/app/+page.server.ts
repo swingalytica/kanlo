@@ -15,7 +15,9 @@ export const load: PageServerLoad = async (event) => {
 
 		const organisations = await membership_model.find({ user: authenticated.id });
 
-		return serializeNonPOJOs({ organisations });
+		console.log('organisations', organisations);
+
+		return { organisations: serializeNonPOJOs(organisations) };
 	} catch (error) {
 		console.error(error);
 		return { organisations: [] };
@@ -32,7 +34,7 @@ export const actions: Actions = {
 
 		const data = await request.formData();
 		const name = (data.get('name') as string)?.trim();
-		const icon = (data.get('icon') as string)?.trim();
+		const icon = (data.get('logo_url') as string)?.trim();
 
 		if (!name) {
 			return { error: 'Organization name is required' };
