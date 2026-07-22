@@ -6,6 +6,10 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
+<svelte:head>
+	<title>{data.organization.name} - Kanlo</title>
+</svelte:head>
+
 <div class="flex h-screen">
 	<Sidebar {data} />
 	{#if form?.success}

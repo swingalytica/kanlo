@@ -56,6 +56,10 @@
 	let color = $state('#3b82f6');
 </script>
 
+<svelte:head>
+	<title>Settings - Kanlo</title>
+</svelte:head>
+
 <div class="flex flex-col gap-8 p-6">
 	<div>
 		<h1 class="text-2xl font-semibold">Organization Settings</h1>

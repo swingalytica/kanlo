@@ -24,6 +24,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Your Organisations - Kanlo</title>
+</svelte:head>
+
 {#if data.memberships && data.memberships.length == 0}
 	<div class="flex h-full flex-col items-center justify-center gap-6">
 		<form
