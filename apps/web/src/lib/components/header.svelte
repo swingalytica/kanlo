@@ -17,6 +17,7 @@
 		</nav>
 	{:else}
 		<nav class="flex items-center gap-2">
+			<Button href="/app/settings">Settings</Button>
 			<form action="/logout" method="POST">
 				<Button variant="destructive" type="submit">Logout</Button>
 			</form>
