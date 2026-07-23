@@ -1,4 +1,5 @@
 import { authenticate } from '$lib/server/authenticate';
+import '$lib/server/mongodb/models';
 import { cookie_options } from '$lib/server/utils';
 import { redirect, type Handle } from '@sveltejs/kit';
 
