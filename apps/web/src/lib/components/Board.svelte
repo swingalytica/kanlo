@@ -13,7 +13,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Plus } from '@lucide/svelte';
-	import type { ActionData, PageData } from '../../routes/app/[id]/$types';
+	import type { ActionData, PageData } from '../../routes/app/[id]/[project_id]/$types';
 	import Column from './Column.svelte';
 
 	let { form, data }: { form: ActionData; data: PageData } = $props();
@@ -24,7 +24,7 @@
 
 	$effect(() => {
 		if (!initialized) {
-			sorted_columns = [...(form?.board?.columns ?? [])].sort((a, b) => a.order - b.order);
+			sorted_columns = [...(data?.board?.columns ?? [])].sort((a, b) => a.order - b.order);
 
 			initialized = true;
 		}
@@ -131,7 +131,7 @@
 	{#each sorted_columns as column, index (column._id)}
 		<Column
 			{column}
-			{form}
+			{data}
 			{index}
 			available_labels={data?.labels ?? []}
 			{dragStart}
@@ -171,7 +171,7 @@
 					};
 				}}
 			>
-				<input type="hidden" name="board_id" value={form?.board?._id} />
+				<input type="hidden" name="board_id" value={data?.board?._id} />
 
 				<div class="flex flex-col gap-1.5">
 					<Label for="name">Name</Label>
@@ -194,7 +194,7 @@
 </div>
 
 <form method="POST" action="?/reorder_columns" use:enhance bind:this={reorder_form} class="hidden">
-	<input type="hidden" name="board_id" value={form?.board?._id} />
+	<input type="hidden" name="board_id" value={data?.board?._id} />
 	<input type="hidden" name="order" bind:value={reorder} />
 </form>
 
@@ -205,6 +205,6 @@
 	bind:this={card_reorder_form}
 	class="hidden"
 >
-	<input type="hidden" name="board_id" value={form?.board?._id} />
+	<input type="hidden" name="board_id" value={data?.board?._id} />
 	<input type="hidden" name="card" bind:this={card_input} />
 </form>

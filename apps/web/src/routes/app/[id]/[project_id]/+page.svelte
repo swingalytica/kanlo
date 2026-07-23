@@ -1,8 +1,9 @@
 <script lang="ts">
+	import Board from '$lib/components/Board.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
-	import type { PageData } from './$types';
+	import type { ActionData, PageData } from './$types';
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
 <svelte:head>
@@ -11,4 +12,5 @@
 
 <div class="flex h-screen">
 	<Sidebar {data} />
+	<Board {data} {form} />
 </div>

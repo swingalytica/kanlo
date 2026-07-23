@@ -6,13 +6,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { MoreVertical, Plus } from '@lucide/svelte';
-	import type { ActionData } from '../../routes/app/[id]/$types';
+	import type { PageData } from '../../routes/app/[id]/[project_id]/$types';
 	import type { ColumnType } from './Board.svelte';
 	import Card, { type CardType } from './Card.svelte';
 
 	let {
 		column,
-		form,
+		data,
 		index,
 		available_labels,
 		dragStart,
@@ -23,7 +23,7 @@
 		cardDragEnd
 	}: {
 		column: ColumnType;
-		form: ActionData;
+		data: PageData;
 		index: number;
 		available_labels: {
 			_id: string;
@@ -39,7 +39,7 @@
 	} = $props();
 
 	function cards_for_column(column_id: string) {
-		return form?.cards
+		return data?.cards
 			.filter((card: { column: string }) => card.column === column_id)
 			.sort((a: { order: number }, b: { order: number }) => a.order - b.order);
 	}
@@ -120,8 +120,8 @@
 				{available_labels}
 				{cardDragStart}
 				{cardDragEnd}
-				board_id={form?.board?._id}
-				activities={form?.activities?.filter(
+				board_id={data?.board?._id}
+				activities={data?.activities?.filter(
 					(activity: { card: CardType }) => activity.card === card._id
 				)}
 			/>
@@ -147,7 +147,7 @@
 	use:enhance
 	class="hidden"
 >
-	<input type="hidden" name="board_id" value={form?.board?._id} />
+	<input type="hidden" name="board_id" value={data?.board?._id} />
 	<input type="hidden" name="column_id" value={column._id} />
 </form>
 
@@ -168,7 +168,7 @@
 				};
 			}}
 		>
-			<input type="hidden" name="board_id" value={form?.board?._id} />
+			<input type="hidden" name="board_id" value={data?.board?._id} />
 			<input type="hidden" name="column_id" value={column._id} />
 
 			<div class="flex flex-col gap-1.5">
@@ -202,7 +202,7 @@
 				};
 			}}
 		>
-			<input type="hidden" name="board_id" value={form?.board?._id} />
+			<input type="hidden" name="board_id" value={data?.board?._id} />
 			<input type="hidden" name="column_id" value={column._id} />
 
 			<div class="flex flex-col gap-1.5">
