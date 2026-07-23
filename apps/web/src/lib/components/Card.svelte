@@ -136,7 +136,6 @@
 					</div>
 					<input type="hidden" name="card_id" value={card._id} hidden />
 					<input type="hidden" name="completed" value="true" hidden />
-					<input type="hidden" name="board_id" value={board_id} hidden />
 				</form>
 			{/if}
 		</Dialog.Header>
@@ -242,7 +241,6 @@
 
 			<input type="hidden" name="card_id" value={card._id} hidden />
 			<input type="hidden" name="labels" value={selected_labels.join(',')} hidden />
-			<input type="hidden" name="board_id" value={board_id} hidden />
 		</form>
 	</Dialog.Content>
 </Dialog.Root>

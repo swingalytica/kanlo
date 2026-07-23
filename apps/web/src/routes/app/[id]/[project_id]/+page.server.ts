@@ -77,17 +77,8 @@ export const actions: Actions = {
 			board.columns.push({ name, order: max_order + 1 });
 			await board.save();
 
-			const cards = await card_model.find({ board: board_id }).lean();
-			const activities = await activity_model
-				.find({ card: { $in: cards.map((c) => c._id) } })
-				.populate('user', 'email')
-				.lean();
-
 			return {
-				success: true,
-				board: JSON.parse(JSON.stringify(board)),
-				cards: JSON.parse(JSON.stringify(cards)),
-				activities: JSON.parse(JSON.stringify(activities))
+				success: true
 			};
 		} catch (error) {
 			console.error(error);
@@ -126,17 +117,8 @@ export const actions: Actions = {
 			column.name = name;
 			await board.save();
 
-			const cards = await card_model.find({ board: board_id }).lean();
-			const activities = await activity_model
-				.find({ card: { $in: cards.map((c) => c._id) } })
-				.populate('user', 'email')
-				.lean();
-
 			return {
-				success: true,
-				board: JSON.parse(JSON.stringify(board)),
-				cards: JSON.parse(JSON.stringify(cards)),
-				activities: JSON.parse(JSON.stringify(activities))
+				success: true
 			};
 		} catch (error) {
 			console.error(error);
@@ -190,17 +172,8 @@ export const actions: Actions = {
 				});
 			}
 
-			const cards = await card_model.find({ board: board_id }).lean();
-			const activities = await activity_model
-				.find({ card: { $in: cards.map((c) => c._id) } })
-				.populate('user', 'email')
-				.lean();
-
 			return {
-				success: true,
-				board: JSON.parse(JSON.stringify(board)),
-				cards: JSON.parse(JSON.stringify(cards)),
-				activities: JSON.parse(JSON.stringify(activities))
+				success: true
 			};
 		} catch (error) {
 			console.error(error);
@@ -356,7 +329,6 @@ export const actions: Actions = {
 
 			const data = await request.formData();
 
-			const board_id = data.get('board_id') as string;
 			const card = JSON.parse(data.get('card') as string);
 
 			const { card_id, column_id, order } = card;
@@ -395,25 +367,8 @@ export const actions: Actions = {
 				}
 			});
 
-			const board = await board_model.findById(board_id).lean();
-
-			if (!board) {
-				return fail(404, {
-					error: 'Board not found'
-				});
-			}
-
-			const cards = await card_model.find({ board: board_id }).lean();
-			const activities = await activity_model
-				.find({ card: { $in: cards.map((c) => c._id) } })
-				.populate('user', 'email')
-				.lean();
-
 			return {
-				success: true,
-				board: JSON.parse(JSON.stringify(board)),
-				cards: JSON.parse(JSON.stringify(cards)),
-				activities: JSON.parse(JSON.stringify(activities))
+				success: true
 			};
 		} catch (error) {
 			console.error(error);
@@ -431,7 +386,6 @@ export const actions: Actions = {
 			const description = data.get('description') as string;
 			const due_date = data.get('due_date') as string;
 			const labels = (data.get('labels') as string)?.split(',').filter(Boolean) || [];
-			const board_id = data.get('board_id') as string;
 
 			if (!card_id || !title) {
 				return fail(400, {
@@ -456,18 +410,8 @@ export const actions: Actions = {
 				});
 			}
 
-			const board = await board_model.findById({ _id: board_id }).lean();
-			const cards = await card_model.find({ board: board_id }).lean();
-			const activities = await activity_model
-				.find({ card: { $in: cards.map((c) => c._id) } })
-				.populate('user', 'email')
-				.lean();
-
 			return {
-				success: true,
-				board: JSON.parse(JSON.stringify(board)),
-				cards: JSON.parse(JSON.stringify(cards)),
-				activities: JSON.parse(JSON.stringify(activities))
+				success: true
 			};
 		} catch (error) {
 			console.error(error);
@@ -492,7 +436,6 @@ export const actions: Actions = {
 
 			const card_id = data.get('card_id') as string;
 			const completed = data.get('completed') === 'true';
-			const board_id = data.get('board_id') as string;
 
 			if (!card_id) {
 				return fail(400, {
@@ -523,18 +466,8 @@ export const actions: Actions = {
 				}
 			});
 
-			const board = await board_model.findById({ _id: board_id }).lean();
-			const cards = await card_model.find({ board: board_id }).lean();
-			const activities = await activity_model
-				.find({ card: { $in: cards.map((c) => c._id) } })
-				.populate('user', 'email')
-				.lean();
-
 			return {
-				success: true,
-				board: JSON.parse(JSON.stringify(board)),
-				cards: JSON.parse(JSON.stringify(cards)),
-				activities: JSON.parse(JSON.stringify(activities))
+				success: true
 			};
 		} catch (error) {
 			console.error(error);

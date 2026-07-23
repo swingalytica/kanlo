@@ -205,6 +205,5 @@
 	bind:this={card_reorder_form}
 	class="hidden"
 >
-	<input type="hidden" name="board_id" value={data?.board?._id} />
 	<input type="hidden" name="card" bind:this={card_input} />
 </form>
