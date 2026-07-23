@@ -36,7 +36,7 @@ export const load = async (event) => {
 		.find({
 			card: { $in: cards.map((c) => c._id) }
 		})
-		.populate('user', 'email')
+		.populate('user', 'name')
 		.lean();
 
 	return {

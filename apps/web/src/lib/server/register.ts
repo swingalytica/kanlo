@@ -2,9 +2,14 @@ import bcrypt from 'bcrypt';
 import { user_model } from './mongodb/models/user';
 import { email_regex } from './utils';
 
-export async function register_user(email: string, password: string): Promise<{ error: string }> {
+export async function register_user(
+	email: string,
+	name: string,
+	password: string
+): Promise<{ error: string }> {
 	const email_error = await verify_email(email);
 	const password_error = verify_password(password);
+	const name_error = verify_name(name);
 
 	if (email_error) {
 		return { error: email_error };
@@ -14,10 +19,14 @@ export async function register_user(email: string, password: string): Promise<{ 
 		return { error: password_error };
 	}
 
+	if (name_error) {
+		return { error: name_error };
+	}
+
 	const salt_rounds = 10;
 	const hashed_password = await bcrypt.hash(password, salt_rounds);
 
-	const user = new user_model({ email, password: hashed_password });
+	const user = new user_model({ email, name, password: hashed_password });
 
 	try {
 		await user.save();
@@ -55,6 +64,18 @@ export function verify_password(password: string): string {
 
 	if (password.length < 8) {
 		return 'Passwort muss mindestens 8 Zeichen lang sein';
+	}
+
+	return '';
+}
+
+export function verify_name(name: string): string {
+	if (!name) {
+		return 'Name ist erforderlich';
+	}
+
+	if (name.length < 2) {
+		return 'Name muss mindestens 2 Zeichen lang sein';
 	}
 
 	return '';

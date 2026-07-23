@@ -33,6 +33,17 @@
 					/>
 				</Field>
 				<Field>
+					<FieldLabel for="name-{id}">Name</FieldLabel>
+					<Input
+						id="name-{id}"
+						name="name"
+						type="text"
+						placeholder="Vorname Nachname"
+						value={form?.user?.name ?? ''}
+						required
+					/>
+				</Field>
+				<Field>
 					<div class="flex items-center">
 						<FieldLabel for="password-{id}">Passwort</FieldLabel>
 					</div>

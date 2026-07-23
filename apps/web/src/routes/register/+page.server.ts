@@ -5,11 +5,12 @@ export const actions: Actions = {
 	register: async ({ request }) => {
 		const data = await request.formData();
 		const email = (data.get('email') as string)?.toLowerCase()?.trim();
+		const name = (data.get('name') as string)?.trim();
 		const password = (data.get('password') as string)?.trim();
 
-		const user = { email };
+		const user = { email, name };
 
-		const { error } = await register_user(email, password);
+		const { error } = await register_user(email, name, password);
 
 		if (error) {
 			return fail(400, { error });

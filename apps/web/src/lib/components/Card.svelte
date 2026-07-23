@@ -44,7 +44,7 @@
 			_id: string;
 			card: string;
 			user: {
-				email: string;
+				name: string;
 			};
 			type: string;
 			data: any;
@@ -222,7 +222,7 @@
 							{#each activities as activity (activity._id)}
 								<div class="rounded-md border border-border p-3 text-sm">
 									<p>
-										<strong>{activity.user.email}</strong>
+										<strong>{activity.user.name}</strong>
 										{activity.type}
 									</p>
 									<p class="text-xs text-muted-foreground">
