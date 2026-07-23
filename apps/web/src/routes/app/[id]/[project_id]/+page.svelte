@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Board from '$lib/components/board.svelte';
+	import SidebarLeft from '$lib/components/sidebar-left.svelte';
 	import Sidebar from '$lib/components/sidebar-right.svelte';
 	import type { ActionData, PageData } from './$types';
 
@@ -10,7 +11,12 @@
 	<title>{data.organization.name} - Kanlo</title>
 </svelte:head>
 
-<div class="flex h-screen">
+<div class="flex h-screen w-full">
 	<Sidebar {data} />
-	<Board {data} {form} />
+
+	<main class="min-w-0 flex-1">
+		<Board {data} {form} />
+	</main>
+
+	<SidebarLeft {data} />
 </div>
