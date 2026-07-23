@@ -1,84 +1,97 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import * as ContextMenu from '$lib/components/ui/context-menu';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Input } from '$lib/components/ui/input';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
-	import { MoreVertical, Plus } from '@lucide/svelte';
-	import type { PageData } from '../../routes/app/[id]/$types';
+	import * as Select from '$lib/components/ui/select';
+	import { Separator } from '$lib/components/ui/separator';
+	import type { PageData } from '../../routes/app/[id]/[project_id]/$types';
 
 	let { data }: { data: PageData } = $props();
-	let dialog_open = $state(false);
-	let name = $state('');
+
+	let selected_assignee = $state<string | undefined>();
+	let show_completed = $state(true);
+	let selected_labels = $state<string[]>([]);
 </script>
 
-<aside class="flex h-full min-h-screen w-64 flex-col border-r border-border bg-card p-4">
-	<div class="mb-4 flex items-center justify-between border-b-2 border-border">
-		<span class="text-sm font-semibold text-foreground">Projects</span>
-
-		<Dialog.Root bind:open={dialog_open}>
-			<Dialog.Trigger class={buttonVariants({ variant: 'ghost', size: 'icon' })}>
-				<Plus class="h-4 w-4" />
-			</Dialog.Trigger>
-			<Dialog.Content class="sm:max-w-106.25">
-				<Dialog.Header>
-					<Dialog.Title>New project</Dialog.Title>
-					<Dialog.Description>Give your project a name to get started.</Dialog.Description>
-				</Dialog.Header>
-
-				<form
-					method="POST"
-					action="?/create_project"
-					class="flex flex-col gap-4"
-					use:enhance={() => {
-						return async ({ update }) => {
-							await update();
-							dialog_open = false;
-							name = '';
-						};
-					}}
-				>
-					<div class="flex flex-col gap-1.5">
-						<Label for="name">Name</Label>
-						<Input id="name" name="name" bind:value={name} required placeholder="My Project" />
-					</div>
-
-					<Dialog.Footer>
-						<Button type="submit">Create project</Button>
-					</Dialog.Footer>
-				</form>
-			</Dialog.Content>
-		</Dialog.Root>
+<aside class="flex h-full min-h-screen w-64 flex-col border-l border-border bg-card p-4">
+	<div class="mb-4 border-b-2 border-border pb-3">
+		<span class="text-sm font-semibold text-foreground">Filters</span>
 	</div>
 
-	<nav class="flex flex-col gap-1">
-		{#each data.projects as project (project._id)}
-			<div class="border-b-2 border-border py-2">
-				<ContextMenu.Root>
-					<ContextMenu.Trigger class="flex flex-row items-center justify-between">
-						<Button
-							variant="outline"
-							size="sm"
-							href={`/app/${data.organization._id}/${project._id}`}
-						>
-							{project.name}
-						</Button>
-						<Button variant="secondary" size="sm" disabled>
-							<MoreVertical />
-						</Button>
-					</ContextMenu.Trigger>
-					<ContextMenu.Content>
-						<form action="?/delete_project" method="POST" use:enhance>
-							<ContextMenu.Item class="text-destructive">
-								<Button variant="ghost" size="sm" type="submit" name="id" value={project._id}>
-									Delete project
-								</Button>
-							</ContextMenu.Item>
-						</form>
-					</ContextMenu.Content>
-				</ContextMenu.Root>
+	<div class="flex flex-col gap-6">
+		<!-- Assignee -->
+		<div class="flex flex-col gap-2">
+			<Label class="text-xs font-semibold text-muted-foreground uppercase">Assignee</Label>
+
+			<Select.Root type="single" bind:value={selected_assignee}>
+				<Select.Trigger>
+					{#if selected_assignee}
+						{data.members.find(
+							(member: { user: { _id: string | undefined } }) =>
+								member.user._id === selected_assignee
+						)?.user.name}
+					{:else}
+						Everyone
+					{/if}
+				</Select.Trigger>
+
+				<Select.Content>
+					<Select.Item value="everyone">Everyone</Select.Item>
+
+					{#each data.members as member (member.user._id)}
+						<Select.Item value={member.user._id}>
+							{member.user.name}
+						</Select.Item>
+					{/each}
+
+					<Select.Item value="unassigned">Unassigned</Select.Item>
+				</Select.Content>
+			</Select.Root>
+		</div>
+
+		<Separator />
+
+		<!-- Status -->
+		<div class="flex flex-col gap-3">
+			<Label class="text-xs font-semibold text-muted-foreground uppercase">Status</Label>
+
+			<div class="flex items-center gap-2">
+				<Checkbox id="completed" bind:checked={show_completed} />
+				<Label for="completed">Show completed</Label>
 			</div>
-		{/each}
-	</nav>
+		</div>
+
+		<Separator />
+
+		<!-- Labels -->
+		<div class="flex flex-col gap-3">
+			<Label class="text-xs font-semibold text-muted-foreground uppercase">Labels</Label>
+
+			<div class="flex flex-col gap-2">
+				{#each data.labels as label (label._id)}
+					<div class="flex items-center gap-2">
+						<Checkbox id={label._id} value={label._id} />
+
+						<Label for={label._id}>
+							{label.name}
+						</Label>
+					</div>
+				{/each}
+			</div>
+		</div>
+
+		<Separator />
+
+		<!-- Due date -->
+		<div class="flex flex-col gap-3">
+			<Label class="text-xs font-semibold text-muted-foreground uppercase">Due date</Label>
+
+			<div class="flex flex-col gap-2 text-sm">
+				<button class="text-left hover:text-primary"> Overdue </button>
+
+				<button class="text-left hover:text-primary"> Today </button>
+
+				<button class="text-left hover:text-primary"> This week </button>
+			</div>
+		</div>
+	</div>
 </aside>

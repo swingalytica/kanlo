@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Sidebar from '$lib/components/sidebar-right.svelte';
+	import SidebarLeft from '$lib/components/sidebar-left.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -10,5 +10,5 @@
 </svelte:head>
 
 <div class="flex h-screen">
-	<Sidebar {data} />
+	<SidebarLeft {data} />
 </div>
