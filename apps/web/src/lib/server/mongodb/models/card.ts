@@ -35,6 +35,10 @@ const card_schema = new mongoose.Schema(
 		completed: {
 			type: Boolean,
 			default: false
+		},
+		assignee: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User'
 		}
 	},
 	{
