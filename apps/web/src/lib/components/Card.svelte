@@ -19,6 +19,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Select from '$lib/components/ui/select';
+	import { shorten_user_name } from '$lib/utils';
 	import { Check } from '@lucide/svelte';
 	import { tick } from 'svelte';
 	import * as Avatar from './ui/avatar';
@@ -78,15 +79,6 @@
 	let available_members_map = $derived(new Map(members.map((member) => [member.user._id, member])));
 
 	let assign_card_form: HTMLFormElement;
-
-	function shorten_user_name(name: string) {
-		const parts = name.split(' ');
-		if (parts.length === 1) {
-			return parts[0].charAt(0).toUpperCase();
-		} else {
-			return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
-		}
-	}
 
 	async function handle_assignee_change(value: string) {
 		if (value === 'unassigned') {
