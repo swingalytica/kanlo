@@ -120,10 +120,10 @@
 				{available_labels}
 				{cardDragStart}
 				{cardDragEnd}
-				board_id={data?.board?._id}
 				activities={data?.activities?.filter(
 					(activity: { card: CardType }) => activity.card === card._id
 				)}
+				members={data?.members}
 			/>
 		{/each}
 

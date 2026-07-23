@@ -3,6 +3,7 @@ import { activity_model, ActivityType } from '$lib/server/mongodb/models/activit
 import { board_model } from '$lib/server/mongodb/models/board';
 import { card_model } from '$lib/server/mongodb/models/card';
 import { label_model } from '$lib/server/mongodb/models/label';
+import { membership_model } from '$lib/server/mongodb/models/membership';
 import { organization_model } from '$lib/server/mongodb/models/organization';
 import { project_model } from '$lib/server/mongodb/models/project';
 import { fail, type Actions } from '@sveltejs/kit';
@@ -17,6 +18,12 @@ export const load = async (event) => {
 	const organization_id = event.params.id;
 
 	const organization = await organization_model.findById(organization_id).lean();
+
+	const members = await membership_model
+		.find({ organization: organization_id })
+		.populate('user', 'name email')
+		.lean();
+
 	const projects = await project_model.find({ organization: organization_id }).lean();
 	const labels = await label_model.find({ organization: organization_id }).lean();
 
@@ -45,7 +52,8 @@ export const load = async (event) => {
 		labels: JSON.parse(JSON.stringify(labels)),
 		board: JSON.parse(JSON.stringify(board)),
 		cards: JSON.parse(JSON.stringify(cards)),
-		activities: JSON.parse(JSON.stringify(activities))
+		activities: JSON.parse(JSON.stringify(activities)),
+		members: JSON.parse(JSON.stringify(members))
 	};
 };
 
@@ -457,6 +465,47 @@ export const actions: Actions = {
 			return fail(500, {
 				error: 'Internal Server Error'
 			});
+		}
+	},
+	assign_card: async (event) => {
+		try {
+			const authenticated = authenticate(event.cookies);
+
+			if (!authenticated) {
+				return fail(401, { error: 'Not authenticated' });
+			}
+
+			const user_id = authenticated.id;
+
+			const form_data = await event.request.formData();
+			const card_id = form_data.get('card_id') as string;
+			const assignee_id = form_data.get('assignee') as string;
+
+			if (!card_id || !assignee_id) {
+				return fail(400, { error: 'Card ID and assignee are required' });
+			}
+
+			const card = await card_model.findByIdAndUpdate(
+				card_id,
+				{ assignee: assignee_id },
+				{ returnDocument: 'after' }
+			);
+
+			if (!card) {
+				return fail(404, { error: 'Card not found' });
+			}
+
+			await activity_model.create({
+				card: card_id,
+				user: user_id,
+				type: ActivityType.ASSIGNED,
+				data: { assignee: assignee_id }
+			});
+
+			return { success: true };
+		} catch (error) {
+			console.error(error);
+			return fail(500, { error: 'Internal Server Error' });
 		}
 	}
 };

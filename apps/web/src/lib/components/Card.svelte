@@ -20,6 +20,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Select from '$lib/components/ui/select';
 	import { Check } from '@lucide/svelte';
+	import { tick } from 'svelte';
 	import Badge from './ui/badge/badge.svelte';
 
 	let {
@@ -27,8 +28,8 @@
 		column,
 		index,
 		available_labels,
-		board_id,
 		activities,
+		members,
 		cardDragStart,
 		cardDragEnd
 	}: {
@@ -40,16 +41,25 @@
 			name: string;
 			color: string;
 		}[];
-		board_id: string;
 		activities: {
 			_id: string;
 			card: string;
 			user: {
+				email: string;
 				name: string;
 			};
 			type: string;
 			data: any;
 			createdAt: string;
+		}[];
+		members: {
+			_id: string;
+			user: {
+				_id: string;
+				email: string;
+				name: string;
+			};
+			role: string;
 		}[];
 		cardDragStart: (card_id: string, column_id: string, index: number) => void;
 		cardDragEnd: (card_id: string, column_id: string, order: number) => void;
@@ -63,6 +73,16 @@
 	const available_labels_map = $derived(
 		new Map(available_labels.map((label) => [label._id, label]))
 	);
+	let selected_assignee = $derived(card.assignee);
+	let available_members_map = $derived(new Map(members.map((member) => [member.user._id, member])));
+
+	let assign_card_form: HTMLFormElement;
+
+	async function handle_assignee_change(value: string) {
+		selected_assignee = value;
+		await tick();
+		assign_card_form?.requestSubmit();
+	}
 
 	function open_dialog() {
 		title = card.title;
@@ -140,9 +160,30 @@
 						<input type="hidden" name="completed" value="true" hidden />
 					</form>
 				{/if}
-				<Select.Root type="single" name="assignee" disabled={card.completed}>
-					<Select.Trigger>{card.assignee ?? 'Unassigned'}</Select.Trigger>
-				</Select.Root>
+				<form action="?/assign_card" method="POST" use:enhance bind:this={assign_card_form}>
+					<Select.Root
+						type="single"
+						name="assignee"
+						disabled={card.completed}
+						value={selected_assignee}
+						onValueChange={handle_assignee_change}
+					>
+						<Select.Trigger>
+							{available_members_map.get(selected_assignee ?? '')?.user.name ?? 'Unassigned'}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Group>
+								<Select.Label>Available Members</Select.Label>
+								{#each available_members_map.values() as member (member._id)}
+									<Select.Item value={member.user._id}>
+										{member.user.name}
+									</Select.Item>
+								{/each}
+							</Select.Group>
+						</Select.Content>
+					</Select.Root>
+					<input type="hidden" name="card_id" value={card._id} hidden />
+				</form>
 			</div>
 		</Dialog.Header>
 
