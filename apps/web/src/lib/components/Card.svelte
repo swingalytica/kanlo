@@ -89,11 +89,15 @@
 	}
 
 	async function handle_assignee_change(value: string) {
-		selected_assignee = value;
+		if (value === 'unassigned') {
+			selected_assignee = undefined;
+		} else {
+			selected_assignee = value;
+		}
+
 		await tick();
 		assign_card_form?.requestSubmit();
 	}
-
 	function open_dialog() {
 		title = card.title;
 		description = card.description;
@@ -182,7 +186,6 @@
 				<form action="?/assign_card" method="POST" use:enhance bind:this={assign_card_form}>
 					<Select.Root
 						type="single"
-						name="assignee"
 						disabled={card.completed}
 						value={selected_assignee}
 						onValueChange={handle_assignee_change}
@@ -200,10 +203,11 @@
 										{member.user.name}
 									</Select.Item>
 								{/each}
-								<Select.Item value="">Unassigned</Select.Item>
+								<Select.Item value="unassigned">Unassigned</Select.Item>
 							</Select.Group>
 						</Select.Content>
 					</Select.Root>
+					<input type="hidden" name="assignee" value={selected_assignee ?? ''} />
 					<input type="hidden" name="card_id" value={card._id} hidden />
 				</form>
 			</div>

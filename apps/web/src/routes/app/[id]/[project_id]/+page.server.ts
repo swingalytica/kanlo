@@ -479,10 +479,12 @@ export const actions: Actions = {
 
 			const form_data = await event.request.formData();
 			const card_id = form_data.get('card_id') as string;
-			const assignee_id = form_data.get('assignee') as string;
+			const raw_assignee_id = form_data.get('assignee') as string;
+			const assignee_id =
+				raw_assignee_id === 'unassigned' || !raw_assignee_id ? null : raw_assignee_id;
 
-			if (!card_id || !assignee_id) {
-				return fail(400, { error: 'Card ID and assignee are required' });
+			if (!card_id) {
+				return fail(400, { error: 'Card ID is required' });
 			}
 
 			const card = await card_model.findByIdAndUpdate(
@@ -495,12 +497,21 @@ export const actions: Actions = {
 				return fail(404, { error: 'Card not found' });
 			}
 
-			await activity_model.create({
-				card: card_id,
-				user: user_id,
-				type: ActivityType.ASSIGNED,
-				data: { assignee: assignee_id }
-			});
+			if (assignee_id) {
+				await activity_model.create({
+					card: card_id,
+					user: user_id,
+					type: ActivityType.ASSIGNED,
+					data: { assignee: assignee_id }
+				});
+			} else {
+				await activity_model.create({
+					card: card_id,
+					user: user_id,
+					type: ActivityType.UNASSIGNED,
+					data: {}
+				});
+			}
 
 			return { success: true };
 		} catch (error) {
