@@ -21,6 +21,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import { Check } from '@lucide/svelte';
 	import { tick } from 'svelte';
+	import * as Avatar from './ui/avatar';
 	import Badge from './ui/badge/badge.svelte';
 
 	let {
@@ -77,6 +78,15 @@
 	let available_members_map = $derived(new Map(members.map((member) => [member.user._id, member])));
 
 	let assign_card_form: HTMLFormElement;
+
+	function shorten_user_name(name: string) {
+		const parts = name.split(' ');
+		if (parts.length === 1) {
+			return parts[0].charAt(0).toUpperCase();
+		} else {
+			return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
+		}
+	}
 
 	async function handle_assignee_change(value: string) {
 		selected_assignee = value;
@@ -136,10 +146,19 @@
 				{/if}
 			{/each}
 		</div>
-		<div class="mt-2 flex flex-row items-center justify-start gap-2">
+		<div class="mt-2 flex flex-row items-center justify-between gap-2">
 			<Badge variant="destructive">
 				{card.due_date ? new Date(card.due_date).toLocaleDateString() : 'No due date'}
 			</Badge>
+			{#if available_members_map.get(selected_assignee ?? '')}
+				<Avatar.Root>
+					<Avatar.Fallback
+						>{shorten_user_name(
+							available_members_map.get(selected_assignee ?? '')?.user.name ?? ''
+						)}</Avatar.Fallback
+					>
+				</Avatar.Root>
+			{/if}
 		</div>
 	</div>
 </button>
@@ -169,7 +188,9 @@
 						onValueChange={handle_assignee_change}
 					>
 						<Select.Trigger>
-							{available_members_map.get(selected_assignee ?? '')?.user.name ?? 'Unassigned'}
+							<span>
+								{available_members_map.get(selected_assignee ?? '')?.user.name ?? 'Unassigned'}
+							</span>
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Group>
@@ -179,6 +200,7 @@
 										{member.user.name}
 									</Select.Item>
 								{/each}
+								<Select.Item value="">Unassigned</Select.Item>
 							</Select.Group>
 						</Select.Content>
 					</Select.Root>
