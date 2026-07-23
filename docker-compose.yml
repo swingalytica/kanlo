@@ -1,9 +1,35 @@
 services:
+  kanlo-web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: kanlo-web
+    restart: unless-stopped
+    ports:
+      - "11425:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      SECRET_MONGODB_URI: ${MONGODB_URI}
+      SECRET_JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - mongodb
+    networks:
+      - kanlo
+
   mongodb:
     image: mongo:8
     container_name: kanlo-mongodb
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:27017:27017"
     volumes:
       - ./mongodb/data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    networks:
+      - kanlo
+
+networks:
+  kanlo:
+    driver: bridge

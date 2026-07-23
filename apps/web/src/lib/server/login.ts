@@ -1,4 +1,4 @@
-import { SECRET_JWT_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { user_model } from './mongodb/models/user';
@@ -11,7 +11,7 @@ export async function login_user(email: string, password: string) {
 		return { error: user.error };
 	}
 
-	const token = jwt.sign({ id: user.id, email: user.email }, SECRET_JWT_KEY, {
+	const token = jwt.sign({ id: user.id, email: user.email }, env.SECRET_JWT_KEY, {
 		expiresIn: '7d'
 	});
 

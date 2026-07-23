@@ -1,4 +1,4 @@
-import { SECRET_JWT_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { Cookies } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 
@@ -8,7 +8,7 @@ export function authenticate(cookies: Cookies): App.Auth | undefined {
 	if (!token) return undefined;
 
 	try {
-		const auth = jwt.verify(token, SECRET_JWT_KEY);
+		const auth = jwt.verify(token, env.SECRET_JWT_KEY);
 
 		if (!auth) throw '';
 

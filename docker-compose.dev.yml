@@ -1,0 +1,8 @@
+services:
+  mongodb:
+    image: mongo:8
+    container_name: kanlo-mongodb-dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/dev/data:/data/db

@@ -1,15 +1,16 @@
-.PHONY: start stop status
+.PHONY: dev-start dev-stop dev-status
 
-start:
-	@echo "Starting MongoDB..."
-	@docker compose -f ./mongodb/docker-compose.yml up -d mongodb
-	@echo "MongoDB started. You can access it at mongodb://localhost:27017"
+dev-start:
+	@echo "Starting development environment..."
+	@docker compose -f docker-compose.dev.yml up -d
+	@echo "Development environment started."
+	@echo "MongoDB: mongodb://localhost:27017"
 
-stop:
-	@echo "Stopping MongoDB..."
-	@docker compose -f ./mongodb/docker-compose.yml down
-	@echo "MongoDB stopped."
+dev-stop:
+	@echo "Stopping development environment..."
+	@docker compose -f docker-compose.dev.yml down
+	@echo "Development environment stopped."
 
-status:
-	@echo "Checking MongoDB status..."
-	@docker compose -f ./mongodb/docker-compose.yml ps
+dev-status:
+	@echo "Checking development environment status..."
+	@docker compose -f docker-compose.dev.yml ps
