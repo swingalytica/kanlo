@@ -5,6 +5,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import type { Filter } from '$lib/types/filter';
 	import { MoreVertical, Plus } from '@lucide/svelte';
 	import type { PageData } from '../../routes/app/[id]/[project_id]/$types';
 	import type { ColumnType } from './board.svelte';
@@ -14,6 +15,7 @@
 		column,
 		data,
 		index,
+		filters,
 		available_labels,
 		dragStart,
 		dragOver,
@@ -25,6 +27,7 @@
 		column: ColumnType;
 		data: PageData;
 		index: number;
+		filters: Filter;
 		available_labels: {
 			_id: string;
 			name: string;
@@ -38,11 +41,44 @@
 		cardDragEnd: (card_id: string, column_id: string, order: number) => void;
 	} = $props();
 
-	function cards_for_column(column_id: string) {
-		return data?.cards
-			.filter((card: { column: string }) => card.column === column_id)
-			.sort((a: { order: number }, b: { order: number }) => a.order - b.order);
-	}
+	const column_cards = $derived(
+		data?.cards
+			.filter((card: { column: string }) => card.column === column._id)
+			.sort((a: { order: number }, b: { order: number }) => a.order - b.order) ?? []
+	);
+
+	const visible_cards = $derived(
+		column_cards.filter(
+			(card: { assignee: string | undefined; completed: any; labels: string | string[] }) => {
+				// Assignee
+				if (filters.assignee !== 'everyone') {
+					if (filters.assignee === 'unassigned' && card.assignee) {
+						return false;
+					}
+
+					if (filters.assignee !== 'unassigned' && card.assignee !== filters.assignee) {
+						return false;
+					}
+				}
+
+				// Completed
+				if (!filters.show_completed && card.completed) {
+					return false;
+				}
+
+				// Labels
+				if (filters.labels && filters.labels.length > 0) {
+					const has_label = filters.labels.some((label) => card.labels.includes(label));
+
+					if (!has_label) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		)
+	);
 
 	let rename_dialog_open = $state(false);
 	let rename_value = $derived(column.name);
@@ -69,7 +105,7 @@
 
 		<div class="flex items-center gap-1">
 			<span class="text-xs text-muted-foreground">
-				{cards_for_column(column._id).length}
+				{visible_cards.length}
 			</span>
 
 			<DropdownMenu.Root>
@@ -109,10 +145,10 @@
 		class="flex min-h-20 flex-col gap-2 px-3 pb-3"
 		ondragover={(event) => {
 			event.preventDefault();
-			cardDragOver(column._id, cards_for_column(column._id).length);
+			cardDragOver(column._id, column_cards.length);
 		}}
 	>
-		{#each cards_for_column(column._id) as card, index (card._id)}
+		{#each visible_cards as card, index (card._id)}
 			<Card
 				{card}
 				column={column._id}

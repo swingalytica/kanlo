@@ -130,6 +130,7 @@
 			{column}
 			{data}
 			{index}
+			{filters}
 			available_labels={data?.labels ?? []}
 			{dragStart}
 			{dragOver}

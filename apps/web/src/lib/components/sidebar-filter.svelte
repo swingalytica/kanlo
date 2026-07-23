@@ -56,7 +56,7 @@
 			<Label class="text-xs font-semibold text-muted-foreground uppercase">Status</Label>
 
 			<div class="flex items-center gap-2">
-				<Checkbox id="completed" bind:checked={show_completed} />
+				<Checkbox id="completed" bind:checked={filters.show_completed} />
 				<Label for="completed">Show completed</Label>
 			</div>
 		</div>
@@ -70,7 +70,17 @@
 			<div class="flex flex-col gap-2">
 				{#each data.labels as label (label._id)}
 					<div class="flex items-center gap-2">
-						<Checkbox id={label._id} value={label._id} />
+						<Checkbox
+							id={label._id}
+							checked={filters?.labels?.includes(label._id)}
+							onCheckedChange={(checked) => {
+								if (checked) {
+									filters.labels = [...(filters?.labels ?? []), label._id];
+								} else {
+									filters.labels = (filters?.labels ?? []).filter((id) => id !== label._id);
+								}
+							}}
+						/>
 
 						<Label for={label._id}>
 							{label.name}

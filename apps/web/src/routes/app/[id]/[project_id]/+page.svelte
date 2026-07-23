@@ -7,7 +7,7 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	let filters: Filter = $state({
+	let filters: Filter = $state<Filter>({
 		assignee: 'everyone',
 		show_completed: true,
 		labels: [] as string[],
