@@ -11,7 +11,7 @@
 		assignee: 'everyone',
 		show_completed: true,
 		labels: [] as string[],
-		due_date: null as Date | null
+		due_date: null
 	});
 </script>
 

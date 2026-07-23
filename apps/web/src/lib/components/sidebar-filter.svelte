@@ -5,6 +5,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import type { Filter } from '$lib/types/filter';
 	import type { PageData } from '../../routes/app/[id]/[project_id]/$types';
+	import { Button } from './ui/button';
 
 	let { data, filters = $bindable() }: { data: PageData; filters: Filter } = $props();
 
@@ -25,11 +26,13 @@
 
 			<Select.Root type="single" bind:value={filters.assignee}>
 				<Select.Trigger>
-					{#if selected_assignee}
+					{#if filters.assignee && filters.assignee !== 'everyone' && filters.assignee !== 'unassigned'}
 						{data.members.find(
 							(member: { user: { _id: string | undefined } }) =>
-								member.user._id === selected_assignee
+								member.user._id === filters.assignee
 						)?.user.name}
+					{:else if filters.assignee === 'unassigned'}
+						Unassigned
 					{:else}
 						Everyone
 					{/if}
@@ -97,11 +100,41 @@
 			<Label class="text-xs font-semibold text-muted-foreground uppercase">Due date</Label>
 
 			<div class="flex flex-col gap-2 text-sm">
-				<button class="text-left hover:text-primary"> Overdue </button>
+				<Button
+					variant={filters.due_date === 'overdue' ? 'default' : 'ghost'}
+					onclick={() => {
+						filters.due_date = filters.due_date === 'overdue' ? null : 'overdue';
+					}}
+				>
+					Overdue
+				</Button>
 
-				<button class="text-left hover:text-primary"> Today </button>
+				<Button
+					variant={filters.due_date === 'today' ? 'default' : 'ghost'}
+					onclick={() => {
+						filters.due_date = filters.due_date === 'today' ? null : 'today';
+					}}
+				>
+					Today
+				</Button>
 
-				<button class="text-left hover:text-primary"> This week </button>
+				<Button
+					variant={filters.due_date === 'week' ? 'default' : 'ghost'}
+					onclick={() => {
+						filters.due_date = filters.due_date === 'week' ? null : 'week';
+					}}
+				>
+					This week
+				</Button>
+
+				<Button
+					variant={filters.due_date === 'no_due_date' ? 'default' : 'ghost'}
+					onclick={() => {
+						filters.due_date = filters.due_date === 'no_due_date' ? null : 'no_due_date';
+					}}
+				>
+					No due date
+				</Button>
 			</div>
 		</div>
 	</div>

@@ -49,7 +49,12 @@
 
 	const visible_cards = $derived(
 		column_cards.filter(
-			(card: { assignee: string | undefined; completed: any; labels: string | string[] }) => {
+			(card: {
+				assignee: string | undefined;
+				completed: boolean;
+				labels: string[];
+				due_date?: string;
+			}) => {
 				// Assignee
 				if (filters.assignee !== 'everyone') {
 					if (filters.assignee === 'unassigned' && card.assignee) {
@@ -75,11 +80,46 @@
 					}
 				}
 
+				// Due date
+				if (filters.due_date) {
+					const due = card.due_date ? new Date(card.due_date) : null;
+					const now = new Date();
+
+					if (filters.due_date === 'overdue') {
+						const today = new Date();
+						today.setHours(0, 0, 0, 0);
+
+						if (!due || due >= today) {
+							return false;
+						}
+					}
+
+					if (filters.due_date === 'today') {
+						if (!due || due.toDateString() !== now.toDateString()) {
+							return false;
+						}
+					}
+
+					if (filters.due_date === 'week') {
+						const end_of_week = new Date();
+						end_of_week.setDate(now.getDate() + 7);
+
+						if (!due || due < now || due > end_of_week) {
+							return false;
+						}
+					}
+
+					if (filters.due_date === 'no_due_date') {
+						if (due) {
+							return false;
+						}
+					}
+				}
+
 				return true;
 			}
 		)
 	);
-
 	let rename_dialog_open = $state(false);
 	let rename_value = $derived(column.name);
 
