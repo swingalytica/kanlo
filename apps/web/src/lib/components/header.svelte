@@ -27,12 +27,6 @@
 	{:else}
 		<nav class="flex items-center gap-2">
 			<a
-				href="/app/settings"
-				class="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-			>
-				Settings
-			</a>
-			<a
 				href="/logout"
 				class="text-destructive-foreground rounded-md bg-destructive px-3 py-2 text-sm font-medium transition-colors hover:opacity-90"
 			>
