@@ -94,8 +94,6 @@ export const actions: Actions = {
 				return fail(400, { error: 'You cannot change your own Manage Members permission' });
 			}
 
-			console.log(state);
-
 			if (state === 'default') {
 				await permission_override_model.deleteOne({
 					membership: member_membership._id,
