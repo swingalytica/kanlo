@@ -40,11 +40,6 @@
 					<Button type="submit" class="w-full">Login</Button>
 				</Field>
 				<Field>
-					{#if form?.user && !('success_message' in form)}
-						<p class="text-sm text-success">
-							Successfully logged in as {form.user.email}. You can now proceed.
-						</p>
-					{/if}
 					{#if form?.error}
 						<p class="text-sm text-destructive">{form.error}</p>
 					{:else if form && 'success_message' in form && form.success_message}
