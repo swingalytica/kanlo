@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ChevronRight, ShieldCheck } from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -48,20 +49,12 @@
 					href="/app/{membership.organization._id}"
 					class="group flex items-center gap-4 px-5 py-4 transition-colors"
 				>
-					{#if membership.organization.icon}
-						<img
-							src={membership.organization.icon}
-							alt={membership.organization.name}
-							class="h-10 w-10 shrink-0 rounded-lg object-cover ring-1 ring-border"
-						/>
-					{:else}
-						<div
-							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-semibold text-primary-foreground"
-						>
+					<Avatar.Root>
+						<Avatar.Image src={membership.organization.icon} alt={membership.organization.name} />
+						<Avatar.Fallback class="bg-muted text-muted-foreground">
 							{generateLogoFallback(membership.organization.name)}
-						</div>
-					{/if}
-
+						</Avatar.Fallback>
+					</Avatar.Root>
 					<div class="flex min-w-0 flex-1 flex-col">
 						<span class="truncate font-medium text-foreground">{membership.organization.name}</span>
 						<Badge variant="secondary" class="mt-1 w-fit text-xs font-normal capitalize">
