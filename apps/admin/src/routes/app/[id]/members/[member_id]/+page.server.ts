@@ -46,53 +46,73 @@ export const load: PageServerLoad = async (event: {
 
 export const actions: Actions = {
 	set_permission_override: async (event) => {
-		const { member_id, id: organization_id } = event.params;
-		const authenticated = authenticate(event.cookies);
+		try {
+			const { member_id, id: organization_id } = event.params;
+			const authenticated = authenticate(event.cookies);
 
-		if (!authenticated) {
-			return fail(401, { error: 'Not authenticated' });
-		}
+			if (!authenticated) {
+				return fail(401, { error: 'Not authenticated' });
+			}
 
-		if (!member_id || !organization_id) {
-			return fail(400, { error: 'Member ID and Organization ID are required' });
-		}
+			if (!member_id || !organization_id) {
+				return fail(400, { error: 'Member ID and Organization ID are required' });
+			}
 
-		const admin_membership = await require_admin(authenticated.id, organization_id);
+			const admin_membership = await require_admin(authenticated.id, organization_id);
 
-		if (!admin_membership) {
-			return fail(403, { error: 'Not authorized' });
-		}
+			if (!admin_membership) {
+				return fail(403, { error: 'Not authorized' });
+			}
 
-		const can_manage_members = await has_permission(
-			{ _id: admin_membership.user.toString(), role: admin_membership.role },
-			'manage_members'
-		);
-
-		if (!can_manage_members) {
-			return fail(403, { error: 'Insufficient permissions to manage members' });
-		}
-
-		const data = await event.request.formData();
-		const permission = data.get('permission') as string;
-		const state = data.get('state') as string; // 'default' | 'allow' | 'deny'
-
-		if (!permission || !state) {
-			return fail(400, { error: 'Permission and state are required' });
-		}
-
-		if (state === 'default') {
-			await permission_override_model.deleteOne({
-				membership: member_id,
-				permission
-			});
-		} else {
-			await permission_override_model.findOneAndUpdate(
-				{ membership: member_id, permission },
-				{ value: state === 'allow' },
-				{ upsert: true }
+			const can_manage_members = await has_permission(
+				{ _id: admin_membership.user.toString(), role: admin_membership.role },
+				'manage_members'
 			);
-		}
 
-		return { success: true, message: 'Permission override updated successfully' };
+			if (!can_manage_members) {
+				return fail(403, { error: 'Insufficient permissions to manage members' });
+			}
+
+			const member_membership = await membership_model.findOne({
+				user: member_id,
+				organization: organization_id
+			});
+
+			if (!member_membership) {
+				return fail(404, { error: 'Member not found in this organization' });
+			}
+
+			const data = await event.request.formData();
+			const permission = data.get('permission') as string;
+			const state = data.get('state') as string; // 'default' | 'allow' | 'deny'
+
+			if (!permission || !state) {
+				return fail(400, { error: 'Permission and state are required' });
+			}
+
+			if (authenticated.id === member_id && permission === 'manage_members') {
+				return fail(400, { error: 'You cannot change your own Manage Members permission' });
+			}
+
+			console.log(state);
+
+			if (state === 'default') {
+				await permission_override_model.deleteOne({
+					membership: member_membership._id,
+					permission
+				});
+			} else {
+				await permission_override_model.findOneAndUpdate(
+					{ membership: member_membership._id, permission },
+					{ value: state === 'allow' },
+					{ upsert: true }
+				);
+			}
+
+			return { success: true, message: 'Permission override updated successfully' };
+		} catch (error) {
+			console.error('Error in set_permission_override action:', error);
+			return fail(500, { error: 'An unexpected error occurred' });
+		}
 	}
 };

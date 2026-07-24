@@ -14,15 +14,17 @@
 		return row.override ? 'allow' : 'deny';
 	}
 
-	let forms: Record<string, HTMLFormElement> = {};
+	let forms = $state<Record<string, HTMLFormElement>>({});
 
-	let states = $derived(
-		Object.fromEntries((data.permission_rows ?? []).map((row) => [row.key, current_state(row)]))
-	);
+	let states = $state<Record<string, string>>({});
 
 	let previous_states: Record<string, string> = {};
 
 	$effect(() => {
+		for (const row of data.permission_rows ?? []) {
+			states[row.key] = current_state(row);
+		}
+
 		if (form?.success && form.message) {
 			toast.success(form.message);
 		}
@@ -76,27 +78,32 @@
 						method="POST"
 						action="?/set_permission_override"
 						bind:this={forms[row.key]}
-						use:enhance={() => {
+						use:enhance={({ formData }) => {
 							previous_states[row.key] = states[row.key];
+
+							formData.set('state', states[row.key]);
 
 							return async ({ update, result }) => {
 								await update();
 
 								if (result.type === 'failure' || result.type === 'error') {
-									states[row.key] = previous_states[row.key];
+									states = {
+										...states,
+										[row.key]: previous_states[row.key]
+									};
 								}
 							};
 						}}
 					>
 						<input type="hidden" name="permission" value={row.key} />
-						<input type="hidden" name="state" value={states[row.key]} />
 
 						<ToggleGroup.Root
 							type="single"
-							bind:value={states[row.key]}
+							value={states[row.key]}
 							onValueChange={(value) => {
 								if (!value) return;
 
+								states[row.key] = value;
 								forms[row.key]?.requestSubmit();
 							}}
 							class="rounded-lg border border-border p-0.5"
