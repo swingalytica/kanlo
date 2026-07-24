@@ -6,6 +6,8 @@ import { label_model } from '$lib/server/mongodb/models/label';
 import { membership_model } from '$lib/server/mongodb/models/membership';
 import { organization_model } from '$lib/server/mongodb/models/organization';
 import { project_model } from '$lib/server/mongodb/models/project';
+import { create_project } from '$lib/server/projects/create';
+import { delete_project } from '$lib/server/projects/delete';
 import { fail, type Actions } from '@sveltejs/kit';
 
 export const load = async (event) => {
@@ -58,6 +60,9 @@ export const load = async (event) => {
 };
 
 export const actions: Actions = {
+	create_project: async ({ request, params, cookies }) =>
+		await create_project(cookies, request, params),
+	delete_project: async (event) => await delete_project(event),
 	add_column: async (event) => {
 		try {
 			const authenticated = authenticate(event.cookies);
