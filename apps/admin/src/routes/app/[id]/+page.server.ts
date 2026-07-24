@@ -1,5 +1,6 @@
 import { authenticate } from '$lib/server/authenticate';
 import { invite_model } from '$lib/server/mongodb/models/invite';
+import { label_model } from '$lib/server/mongodb/models/label';
 import { membership_model, OrganizationRole } from '$lib/server/mongodb/models/membership';
 import { organization_model } from '$lib/server/mongodb/models/organization';
 import { fail, type Actions } from '@sveltejs/kit';
@@ -31,6 +32,7 @@ export const load: PageServerLoad = async (event) => {
 	const organization_id = event.params.id;
 
 	const membership = await require_admin(authenticated.id, organization_id);
+	const labels = await label_model.find({ organization: organization_id }).lean();
 
 	if (!membership) {
 		return { error: 'You do not have admin access to this organisation' };
@@ -49,7 +51,8 @@ export const load: PageServerLoad = async (event) => {
 		organization: JSON.parse(JSON.stringify(organization)),
 		memberships: JSON.parse(JSON.stringify(memberships)),
 		invites: JSON.parse(JSON.stringify(invites)),
-		current_membership: JSON.parse(JSON.stringify(membership))
+		current_membership: JSON.parse(JSON.stringify(membership)),
+		labels: JSON.parse(JSON.stringify(labels))
 	};
 };
 
@@ -241,5 +244,102 @@ export const actions: Actions = {
 		await membership_model.deleteOne({ _id: membership_id, organization: organization_id });
 
 		return { success: true, message: 'Member removed successfully' };
+	},
+	create_label: async (event) => {
+		const authenticated = authenticate(event.cookies);
+
+		if (!authenticated) {
+			return fail(401, { error: 'Not authenticated' });
+		}
+
+		const organization_id = event.params.id;
+
+		if (!organization_id) {
+			return fail(400, { error: 'Organization ID is required' });
+		}
+
+		const admin_membership = await require_admin(authenticated.id, organization_id);
+
+		if (!admin_membership) {
+			return fail(403, { error: 'Not authorized' });
+		}
+
+		const data = await event.request.formData();
+		const name = (data.get('name') as string)?.trim();
+		const color = (data.get('color') as string)?.trim();
+
+		if (!name || !color) {
+			return fail(400, { error: 'Name and color are required' });
+		}
+
+		await label_model.create({
+			organization: organization_id,
+			name,
+			color
+		});
+
+		return { success: true };
+	},
+
+	delete_label: async (event) => {
+		const authenticated = authenticate(event.cookies);
+
+		if (!authenticated) {
+			return fail(401, { error: 'Not authenticated' });
+		}
+
+		const organization_id = event.params.id;
+
+		if (!organization_id) {
+			return fail(400, { error: 'Organization ID is required' });
+		}
+
+		const admin_membership = await require_admin(authenticated.id, organization_id);
+
+		if (!admin_membership) {
+			return fail(403, { error: 'Not authorized' });
+		}
+
+		const data = await event.request.formData();
+		const label_id = data.get('label_id') as string;
+
+		await label_model.deleteOne({ _id: label_id, organization: organization_id });
+
+		return { success: true };
+	},
+	update_label: async (event) => {
+		const authenticated = authenticate(event.cookies);
+
+		if (!authenticated) {
+			return fail(401, { error: 'Not authenticated' });
+		}
+
+		const organization_id = event.params.id;
+
+		if (!organization_id) {
+			return fail(400, { error: 'Organization ID is required' });
+		}
+
+		const admin_membership = await require_admin(authenticated.id, organization_id);
+
+		if (!admin_membership) {
+			return fail(403, { error: 'Not authorized' });
+		}
+
+		const data = await event.request.formData();
+		const label_id = data.get('label_id') as string;
+		const name = (data.get('name') as string)?.trim();
+		const color = (data.get('color') as string)?.trim();
+
+		if (!label_id || !name || !color) {
+			return fail(400, { error: 'label_id, name and color are required' });
+		}
+
+		await label_model.findOneAndUpdate(
+			{ _id: label_id, organization: organization_id },
+			{ name, color }
+		);
+
+		return { success: true };
 	}
 };
