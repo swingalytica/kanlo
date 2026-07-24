@@ -331,9 +331,9 @@ export const actions: Actions = {
 			});
 		}
 	},
-	add_card: async ({ request, cookies }) => {
+	add_card: async (event) => {
 		try {
-			const authenticated = authenticate(cookies);
+			const authenticated = authenticate(event.cookies);
 
 			if (!authenticated) {
 				return fail(401, {
@@ -343,11 +343,29 @@ export const actions: Actions = {
 
 			const user_id = authenticated.id;
 
-			const data = await request.formData();
+			const data = await event.request.formData();
 
 			const board_id = data.get('board_id');
 			const column_id = data.get('column_id');
 			const title = data.get('title');
+
+			const membership = await membership_model.findOne({
+				user: authenticated.id,
+				organization: event.params.id
+			});
+
+			if (!membership) {
+				return { success: false, error: 'Not a member of this organization' };
+			}
+
+			const can_add_card = await has_permission(
+				{ _id: membership.user.toString(), role: membership.role },
+				'create_card'
+			);
+
+			if (!can_add_card) {
+				return { success: false, error: 'Insufficient permissions to add card' };
+			}
 
 			if (
 				typeof board_id !== 'string' ||
@@ -393,9 +411,9 @@ export const actions: Actions = {
 			});
 		}
 	},
-	reorder_card: async ({ request, cookies }) => {
+	reorder_card: async (event) => {
 		try {
-			const authenticated = authenticate(cookies);
+			const authenticated = authenticate(event.cookies);
 
 			if (!authenticated) {
 				return fail(401, {
@@ -405,11 +423,29 @@ export const actions: Actions = {
 
 			const user_id = authenticated.id;
 
-			const data = await request.formData();
+			const data = await event.request.formData();
 
 			const card = JSON.parse(data.get('card') as string);
 
 			const { card_id, column_id, order } = card;
+
+			const membership = await membership_model.findOne({
+				user: authenticated.id,
+				organization: event.params.id
+			});
+
+			if (!membership) {
+				return { success: false, error: 'Not a member of this organization' };
+			}
+
+			const can_mode_card = await has_permission(
+				{ _id: membership.user.toString(), role: membership.role },
+				'move_card'
+			);
+
+			if (!can_mode_card) {
+				return { success: false, error: 'Insufficient permissions to move card' };
+			}
 
 			if (
 				typeof card_id !== 'string' ||
@@ -455,20 +491,44 @@ export const actions: Actions = {
 			});
 		}
 	},
-	save_card: async ({ request }) => {
+	save_card: async (event) => {
 		try {
-			const data = await request.formData();
-
+			const data = await event.request.formData();
+			const authenticated = authenticate(event.cookies);
 			const card_id = data.get('card_id') as string;
 			const title = data.get('title') as string;
 			const description = data.get('description') as string;
 			const due_date = data.get('due_date') as string;
 			const labels = (data.get('labels') as string)?.split(',').filter(Boolean) || [];
 
+			if (!authenticated) {
+				return fail(401, {
+					error: 'Not authenticated'
+				});
+			}
+
 			if (!card_id || !title) {
 				return fail(400, {
 					error: 'Card ID and title are required'
 				});
+			}
+
+			const membership = await membership_model.findOne({
+				user: authenticated.id,
+				organization: event.params.id
+			});
+
+			if (!membership) {
+				return { success: false, error: 'Not a member of this organization' };
+			}
+
+			const can_update_card = await has_permission(
+				{ _id: membership.user.toString(), role: membership.role },
+				'update_card'
+			);
+
+			if (!can_update_card) {
+				return { success: false, error: 'Insufficient permissions to save card' };
 			}
 
 			const card = await card_model.findByIdAndUpdate(
@@ -498,9 +558,9 @@ export const actions: Actions = {
 			});
 		}
 	},
-	mark_card_completed: async ({ request, cookies }) => {
+	mark_card_completed: async (event) => {
 		try {
-			const authenticated = authenticate(cookies);
+			const authenticated = authenticate(event.cookies);
 
 			if (!authenticated) {
 				return fail(401, {
@@ -508,9 +568,27 @@ export const actions: Actions = {
 				});
 			}
 
+			const membership = await membership_model.findOne({
+				user: authenticated.id,
+				organization: event.params.id
+			});
+
+			if (!membership) {
+				return { success: false, error: 'Not a member of this organization' };
+			}
+
+			const can_complete_card = await has_permission(
+				{ _id: membership.user.toString(), role: membership.role },
+				'complete_card'
+			);
+
+			if (!can_complete_card) {
+				return { success: false, error: 'Insufficient permissions to complete card' };
+			}
+
 			const user_id = authenticated.id;
 
-			const data = await request.formData();
+			const data = await event.request.formData();
 
 			const card_id = data.get('card_id') as string;
 			const completed = data.get('completed') === 'true';
@@ -563,6 +641,24 @@ export const actions: Actions = {
 			}
 
 			const user_id = authenticated.id;
+
+			const membership = await membership_model.findOne({
+				user: authenticated.id,
+				organization: event.params.id
+			});
+
+			if (!membership) {
+				return { success: false, error: 'Not a member of this organization' };
+			}
+
+			const can_assign_card = await has_permission(
+				{ _id: membership.user.toString(), role: membership.role },
+				'assign_card'
+			);
+
+			if (!can_assign_card) {
+				return { success: false, error: 'Insufficient permissions to assign card' };
+			}
 
 			const form_data = await event.request.formData();
 			const card_id = form_data.get('card_id') as string;

@@ -17,7 +17,6 @@ export const permissions = {
 	// Cards
 	create_card: [OWNER, ADMIN, MEMBER],
 	update_card: [OWNER, ADMIN, MEMBER],
-	delete_card: [OWNER, ADMIN, MEMBER],
 	move_card: [OWNER, ADMIN, MEMBER],
 	assign_card: [OWNER, ADMIN, MEMBER],
 	complete_card: [OWNER, ADMIN, MEMBER],
@@ -47,7 +46,6 @@ export const permission_mapping = {
 	// Cards
 	create_card: 'Create Card',
 	update_card: 'Update Card',
-	delete_card: 'Delete Card',
 	move_card: 'Move Card',
 	assign_card: 'Assign Card',
 	complete_card: 'Complete Card',
