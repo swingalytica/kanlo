@@ -75,7 +75,6 @@ export const actions: Actions = {
 
 		return { success: true, message: 'Organization updated successfully' };
 	},
-
 	create_invite: async (event) => {
 		const authenticated = authenticate(event.cookies);
 
@@ -135,7 +134,6 @@ export const actions: Actions = {
 			return fail(500, { error: 'Failed to create invite (maybe already invited?)' });
 		}
 	},
-
 	revoke_invite: async (event) => {
 		const authenticated = authenticate(event.cookies);
 
@@ -162,7 +160,6 @@ export const actions: Actions = {
 
 		return { success: true, message: 'Invite revoked successfully' };
 	},
-
 	update_member_role: async (event) => {
 		const authenticated = authenticate(event.cookies);
 
@@ -193,7 +190,7 @@ export const actions: Actions = {
 
 		const data = await event.request.formData();
 		const membership_id = data.get('membership_id') as string;
-		const role = data.get('role') as string;
+		const role = data.get('role') as OrganizationRole;
 
 		if (!Object.values(OrganizationRole).includes(role as OrganizationRole)) {
 			return fail(400, { error: 'Invalid role' });
