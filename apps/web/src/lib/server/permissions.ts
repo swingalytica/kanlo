@@ -1,13 +1,6 @@
-import { OrganizationRole } from './mongodb/models/membership';
+import type { OrganizationRole } from '$lib/shared/enum';
+import { permissions } from '$lib/shared/permissions.const';
 import { permission_override_model } from './mongodb/models/permission';
-
-export const permissions = {
-	create_project: [OrganizationRole.OWNER, OrganizationRole.ADMIN],
-	delete_project: [OrganizationRole.OWNER, OrganizationRole.ADMIN],
-	manage_members: [OrganizationRole.OWNER, OrganizationRole.ADMIN],
-	manage_labels: [OrganizationRole.OWNER, OrganizationRole.ADMIN],
-	manage_invites: [OrganizationRole.OWNER, OrganizationRole.ADMIN]
-} as const;
 
 export async function has_permission(
 	membership: { _id: string; role: OrganizationRole },
