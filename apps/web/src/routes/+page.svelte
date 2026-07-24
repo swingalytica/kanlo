@@ -5,6 +5,10 @@
 	const { form }: { form: ActionData } = $props();
 </script>
 
+<svelte:head>
+	<title>Login | Kanlo</title>
+</svelte:head>
+
 <div class="flex h-screen w-full items-center justify-center px-4">
 	<LoginForm {form} />
 </div>
