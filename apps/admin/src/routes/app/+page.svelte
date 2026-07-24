@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge';
+	import { generateLogoFallback } from '$lib/utils/logo';
 	import { ChevronRight, ShieldCheck } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -8,19 +9,6 @@
 
 	let name = $state('');
 	let logo_url = $state('');
-
-	function generateLogoFallback(name: string): string | null {
-		if (name.trim() === '') {
-			return null;
-		}
-
-		const initials = name
-			.split(' ')
-			.map((word) => word[0])
-			.join('')
-			.toUpperCase();
-		return initials;
-	}
 </script>
 
 <svelte:head>
