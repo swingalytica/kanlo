@@ -3,6 +3,7 @@ import { permission_override_model } from './mongodb/models/permission';
 
 export const permissions = {
 	create_project: [OrganizationRole.OWNER, OrganizationRole.ADMIN, OrganizationRole.MEMBER],
+	delete_project: [OrganizationRole.OWNER, OrganizationRole.ADMIN],
 	manage_members: [OrganizationRole.OWNER, OrganizationRole.ADMIN],
 	manage_labels: [OrganizationRole.OWNER, OrganizationRole.ADMIN],
 	manage_invites: [OrganizationRole.OWNER, OrganizationRole.ADMIN]

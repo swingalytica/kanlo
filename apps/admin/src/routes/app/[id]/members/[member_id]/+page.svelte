@@ -8,6 +8,7 @@
 
 	const permission_labels: Record<string, string> = {
 		create_project: 'Create projects',
+		delete_project: 'Delete projects',
 		manage_members: 'Manage members',
 		manage_labels: 'Manage labels',
 		manage_invites: 'Manage invites'
