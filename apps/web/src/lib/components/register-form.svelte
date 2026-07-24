@@ -14,9 +14,7 @@
 <Card.Root class="mx-auto w-full max-w-sm">
 	<Card.Header>
 		<Card.Title class="text-2xl">Register</Card.Title>
-		<Card.Description
-			>Geben Sie unten Ihre E-Mail-Adresse ein, um ein neues Konto zu erstellen</Card.Description
-		>
+		<Card.Description>Enter your details to create a new account.</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<form method="POST" action="?/register" use:enhance>
@@ -53,15 +51,13 @@
 					<Button type="submit" class="w-full">Register</Button>
 				</Field>
 				<Field>
-					{#if form?.user && !('success_message' in form)}
+					{#if form?.user}
 						<p class="text-sm text-success">
 							Successfully registered as {form.user.email}. You can now proceed.
 						</p>
 					{/if}
 					{#if form?.error}
 						<p class="text-sm text-destructive">{form.error}</p>
-					{:else if form && 'success_message' in form && form.success_message}
-						<p class="text-sm text-success">{form.success_message}</p>
 					{/if}
 				</Field>
 			</FieldGroup>
