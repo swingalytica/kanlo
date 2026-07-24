@@ -8,11 +8,6 @@ export const permissions = {
 	update_project: [OWNER, ADMIN],
 	delete_project: [OWNER, ADMIN],
 
-	// Boards
-	create_board: [OWNER, ADMIN],
-	update_board: [OWNER, ADMIN],
-	delete_board: [OWNER, ADMIN],
-
 	// Columns
 	create_column: [OWNER, ADMIN, MEMBER],
 	update_column: [OWNER, ADMIN, MEMBER],
@@ -44,10 +39,6 @@ export const permission_mapping = {
 	create_project: 'Create Project',
 	update_project: 'Update Project',
 	delete_project: 'Delete Project',
-	// Boards
-	create_board: 'Create Board',
-	update_board: 'Update Board',
-	delete_board: 'Delete Board',
 	// Columns
 	create_column: 'Create Column',
 	update_column: 'Update Column',
