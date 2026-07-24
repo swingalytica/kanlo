@@ -47,7 +47,7 @@ export const actions: Actions = {
 			if (!authenticated) {
 				return {
 					status: 401,
-					error: new Error('Unauthorized')
+					error: 'Unauthorized'
 				};
 			}
 
@@ -85,7 +85,7 @@ export const actions: Actions = {
 			console.error('Error updating profile:', error);
 			return {
 				status: 500,
-				error: new Error('Failed to update profile')
+				error: 'Failed to update profile'
 			};
 		}
 	},

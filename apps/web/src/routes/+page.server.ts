@@ -11,7 +11,7 @@ export const actions: Actions = {
 		const user_data = await login_user(email, password);
 
 		if ('error' in user_data) {
-			return fail(400, { email, error: user_data.error });
+			return fail(400, { user: { email }, error: user_data.error });
 		}
 
 		const { token } = user_data;
