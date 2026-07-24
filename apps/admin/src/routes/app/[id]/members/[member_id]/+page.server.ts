@@ -9,10 +9,10 @@ import { fail, type Actions, type Cookies } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event: {
-	params: { member_id: string };
+	params: { member_id: string; id: string };
 	cookies: Cookies;
 }) => {
-	const { member_id } = event.params;
+	const { member_id, id: organization_id } = event.params;
 	const authenticated = authenticate(event.cookies);
 
 	if (!authenticated) {
@@ -20,7 +20,10 @@ export const load: PageServerLoad = async (event: {
 	}
 
 	const membership = await membership_model
-		.findOne({ user: member_id })
+		.findOne({
+			user: member_id,
+			organization: organization_id
+		})
 		.populate('user', 'email')
 		.lean();
 
@@ -28,7 +31,7 @@ export const load: PageServerLoad = async (event: {
 		return { error: 'Member not found' };
 	}
 
-	const overrides = await permission_override_model.find({ membership: member_id }).lean();
+	const overrides = await permission_override_model.find({ membership: membership._id }).lean();
 
 	const override_map = new Map(overrides.map((o) => [o.permission, o.value]));
 
@@ -40,6 +43,7 @@ export const load: PageServerLoad = async (event: {
 
 	return {
 		membership: JSON.parse(JSON.stringify(membership)),
+		user_id: authenticated.id,
 		permission_rows
 	};
 };

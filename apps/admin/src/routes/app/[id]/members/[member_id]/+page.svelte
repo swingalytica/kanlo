@@ -18,13 +18,21 @@
 
 	let states = $state<Record<string, string>>({});
 
+	let initialized = false;
+
+	$effect(() => {
+		if (!initialized && data.permission_rows) {
+			for (const row of data.permission_rows) {
+				states[row.key] = current_state(row);
+			}
+
+			initialized = true;
+		}
+	});
+
 	let previous_states: Record<string, string> = {};
 
 	$effect(() => {
-		for (const row of data.permission_rows ?? []) {
-			states[row.key] = current_state(row);
-		}
-
 		if (form?.success && form.message) {
 			toast.success(form.message);
 		}
@@ -100,6 +108,7 @@
 						<ToggleGroup.Root
 							type="single"
 							value={states[row.key]}
+							disabled={row.key === 'manage_members' && data.user_id === data.membership.user._id}
 							onValueChange={(value) => {
 								if (!value) return;
 
